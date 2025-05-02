@@ -21,6 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "users")
 
 public class User implements UserDetails , Principal {
     @Id
@@ -65,7 +66,7 @@ public class User implements UserDetails , Principal {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                .map(role -> (GrantedAuthority) role::getName)
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .toList();
     }
 
