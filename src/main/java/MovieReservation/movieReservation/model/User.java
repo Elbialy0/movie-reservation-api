@@ -51,6 +51,8 @@ public class User implements UserDetails , Principal {
     private List<Role> roles;
     @OneToMany(mappedBy = "user")
     private List<Movie> movies;
+    @OneToMany(mappedBy = "user")
+    private List<Reservation> reservations;
 
 
     @Override

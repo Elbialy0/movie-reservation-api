@@ -3,12 +3,10 @@ package MovieReservation.movieReservation.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @Setter
@@ -17,28 +15,27 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Movie {
+public class Reservation {
     @Id
     @GeneratedValue
     private Long id;
-    private String title;
-    private String poster;
-    private String description;
-    private String trailer;
+    @ManyToOne
+    @JoinColumn(name = "seat_id")
+    private Seat seat;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
     @ManyToOne
-    @JoinColumn(name = "genre_id")
-    private Genre genre;
+    @JoinColumn(name = "show_time_id")
+    private ShowTime showTime;
+    private Status status;
     @CreatedDate
     @Column(updatable = false,nullable = false)
     private LocalDate createdDate;
     @LastModifiedDate
-    @Column(nullable = false)
+    @Column(insertable = false)
     private LocalDate lastModifiedDate;
-    @LastModifiedBy
-    private String lastModifiedBy;
-    @OneToMany(mappedBy = "movie")
-    private List<ShowTime> showTimes;
+    @OneToOne(mappedBy = "reservation")
+    private Payment payment;
+
 }

@@ -1,5 +1,6 @@
 package MovieReservation.movieReservation.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -20,5 +21,6 @@ public class Role {
     private Long id;
     private String name;
     @ManyToMany(mappedBy = "roles")
+    @JsonIgnore
     private List<User> users;
 }
