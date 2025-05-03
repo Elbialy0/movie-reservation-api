@@ -16,8 +16,6 @@ public class Seat {
     @GeneratedValue
     private Long id;
     private boolean available;
-    private int row;
-    private int column;
     @ManyToOne
     @JoinColumn(name = "hall_id")
     private Hall hall;
