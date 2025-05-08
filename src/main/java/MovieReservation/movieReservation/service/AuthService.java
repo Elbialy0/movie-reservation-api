@@ -6,10 +6,12 @@ import MovieReservation.movieReservation.model.User;
 import MovieReservation.movieReservation.repository.RoleRepo;
 import MovieReservation.movieReservation.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,5 +38,11 @@ public class AuthService {
                 .build();
         userRepo.save(user);
         emailService.properConfirmationEmail(user.getUsername());
+    }
+
+    public Optional<User> getAuthentication() {
+        return SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User ?
+                Optional.of((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()) : Optional.empty();
+
     }
 }

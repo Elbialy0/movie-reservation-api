@@ -8,5 +8,6 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     public void properConfirmationEmail(String username) {
+
     }
 }
