@@ -24,9 +24,8 @@ public class SignupRequest {
     @NotNull(message = "Username is required")
     private String username;
     @NotBlank(message = "Password is required")
-    @NotEmpty(message = "Password is required")
-    @NotNull(message = "Password is required")
-    @Min(value = 8, message = "Password must be at least 8 characters long")
+
+    @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
     private String phoneNumber;
     private LocalDate birthDate;

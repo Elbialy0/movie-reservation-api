@@ -20,7 +20,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
 
 public class User implements UserDetails , Principal {
@@ -36,12 +35,6 @@ public class User implements UserDetails , Principal {
     private LocalDate birthDate;
     private boolean enabled;
     private boolean locked;
-    @CreatedDate
-    @Column(updatable = false,nullable = false)
-    private LocalDate createdDate;
-    @LastModifiedDate
-    @Column(nullable = false)
-    private LocalDate lastModifiedDate;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",

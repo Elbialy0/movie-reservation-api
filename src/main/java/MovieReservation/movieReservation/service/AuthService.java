@@ -37,7 +37,7 @@ public class AuthService {
                 .roles(List.of(role))
                 .build();
         userRepo.save(user);
-        emailService.properConfirmationEmail(user.getUsername());
+//        emailService.properConfirmationEmail(user.getUsername());
     }
 
     public Optional<User> getAuthentication() {

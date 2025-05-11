@@ -23,7 +23,7 @@ import java.util.List;
 public class JwtService {
     @Value("${spring.application.security.jwt.expiration}")
     private Long EXPIRATION_TIME;
-    @Value("${spring.application.security.jwt.secret}")
+    @Value("${spring.application.security.jwt.secret-key}")
     private String SECRET;
     private final CustomUserService customUserService;
 

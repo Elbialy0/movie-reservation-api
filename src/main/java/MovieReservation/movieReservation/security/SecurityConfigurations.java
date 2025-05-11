@@ -36,7 +36,7 @@ public class SecurityConfigurations {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth->
                         auth.requestMatchers(
-                                "/api/v1/auth/**",
+                                "/auth/**",
                                 "/error","/oauth2/authorization/google"
 
                         ).permitAll().anyRequest().authenticated())
