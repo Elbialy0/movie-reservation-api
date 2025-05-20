@@ -1,6 +1,7 @@
 package MovieReservation.movieReservation.service;
 
 import MovieReservation.movieReservation.dto.SignupRequest;
+import MovieReservation.movieReservation.exceptions.UsernameNotFoundException;
 import MovieReservation.movieReservation.model.Role;
 import MovieReservation.movieReservation.model.Token;
 import MovieReservation.movieReservation.model.User;
@@ -69,7 +70,7 @@ public class AuthService {
 
     public void   forgetPassword(String email) {
         if(!userRepo.findByUsername(email).isPresent()){
-            throw new RuntimeException("Username not found");
+            throw new UsernameNotFoundException("Username not found");
         }
         User user = userRepo.getByUsername(email);
         String token = tokenService.createForgetToken(user);

@@ -1,5 +1,6 @@
 package MovieReservation.movieReservation.security;
 
+import MovieReservation.movieReservation.exceptions.InvalidJwtToken;
 import MovieReservation.movieReservation.model.User;
 import MovieReservation.movieReservation.service.CustomUserService;
 import io.jsonwebtoken.Claims;
@@ -60,12 +61,12 @@ public class JwtService {
             // Check the expiration
             if(claims.getExpiration().before(new Date())){
                 // todo InvalidJwtTokenException
-                throw new ExpiredJwtException(null,null,"Token expired");
+                throw new InvalidJwtToken("Token expired");
             }
 
             // Check the authorities were existed or not
             if(claims.get("authorities", List.class) == null){
-                throw new RuntimeException("Invalid token");
+                throw new InvalidJwtToken("Invalid token");
             }
             // Extract username
             var username = claims.getSubject();
@@ -74,7 +75,7 @@ public class JwtService {
             // Extract authorities
             @SuppressWarnings("unchecked")
             List<String> rawAuthorities = claims.get("authorities", List.class);
-            if (rawAuthorities == null) throw new RuntimeException("Invalid token");
+            if (rawAuthorities == null) throw new InvalidJwtToken("Invalid token");
 
             var authorities = rawAuthorities.stream()
                     .map(SimpleGrantedAuthority::new)
@@ -84,10 +85,10 @@ public class JwtService {
             // Generate the Authentication token
             return new UsernamePasswordAuthenticationToken(user, null, authorities);
         } catch (ExpiredJwtException e) {
-            throw new RuntimeException("Token expired",e);
+            throw new InvalidJwtToken("Token expired");
         }
         catch (Exception e){
-            throw new RuntimeException("Invalid token",e);
+            throw new InvalidJwtToken("Invalid token");
         }
 
 
