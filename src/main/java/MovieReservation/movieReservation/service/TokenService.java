@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -27,7 +30,7 @@ public class TokenService {
         }
 
         User user = userRepo.getByUsername(username);
-        tokenRepo.save(Token.builder().token(token).user(user).build());
+        tokenRepo.save(Token.builder().token(token).user(user).expirationDate(LocalDateTime.now().plusMinutes(5)) .build());
         return token;
     }
 
@@ -42,4 +45,14 @@ public class TokenService {
     }
 
 
+    public Token verify(String token) {
+        Token dbToken = tokenRepo.findByToken(token);
+        if(dbToken == null){
+            throw new RuntimeException("Invalid token");
+        }
+        if(dbToken.getExpirationDate().isBefore(LocalDateTime.now())){
+            throw new RuntimeException("Token expired");
+        }
+        return dbToken;
+    }
 }

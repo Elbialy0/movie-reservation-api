@@ -3,6 +3,9 @@ package MovieReservation.movieReservation.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,5 +21,6 @@ public class Token {
     @ManyToOne
     @JoinColumn(name = "user_id",nullable = false)
     private User user;
+    private LocalDateTime expirationDate;
 
 }

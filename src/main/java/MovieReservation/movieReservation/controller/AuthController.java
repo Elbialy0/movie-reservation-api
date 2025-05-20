@@ -18,8 +18,11 @@ public class AuthController {
         authService.signup(request);
         return ResponseEntity.accepted().body("User signup successfully");
     }
-    @GetMapping("/")
-    public ResponseEntity<String> hello(){
-        return ResponseEntity.ok("Hello");
+    @GetMapping("/activation/{token}")
+    public ResponseEntity<String> activation(@PathVariable String token){
+        authService.activate(token);
+        return ResponseEntity.accepted().body("User account activated successfully");
     }
+
+
 }

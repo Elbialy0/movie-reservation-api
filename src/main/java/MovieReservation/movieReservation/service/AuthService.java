@@ -41,7 +41,7 @@ public class AuthService {
         userRepo.save(user);
         String  token = tokenService.createToken(request.getUsername());
         emailService.sendEmail(token,request.getUsername(),"Movie Reservation Account Activation",
-                "activate_account.html","http://localhost:8080/api/v1/auth/activation"
+                "activate_account.html",String.format("http://localhost:8080/api/v1/auth/activation/%s", token)
         );
 
     }
@@ -50,5 +50,12 @@ public class AuthService {
         return SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User ?
                 Optional.of((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()) : Optional.empty();
 
+    }
+
+    public void activate(String token) {
+        Token dbToken = tokenService.verify(token);
+        User user = dbToken.getUser();
+        user.setEnabled(true);
+        userRepo.save(user);
     }
 }
