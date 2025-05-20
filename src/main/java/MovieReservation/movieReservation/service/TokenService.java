@@ -1,16 +1,13 @@
 package MovieReservation.movieReservation.service;
 
+import MovieReservation.movieReservation.exceptions.VerificationTokenException;
 import MovieReservation.movieReservation.model.Token;
 import MovieReservation.movieReservation.model.User;
 import MovieReservation.movieReservation.repository.TokenRepo;
 import MovieReservation.movieReservation.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -48,10 +45,10 @@ public class TokenService {
     public Token verify(String token) {
         Token dbToken = tokenRepo.findByToken(token);
         if(dbToken == null){
-            throw new RuntimeException("Invalid token");
+            throw new VerificationTokenException("Token not found. Please try again or sign up again.");
         }
         if(dbToken.getExpirationDate().isBefore(LocalDateTime.now())){
-            throw new RuntimeException("Token expired");
+            throw new VerificationTokenException("Token expired");
         }
         return dbToken;
     }

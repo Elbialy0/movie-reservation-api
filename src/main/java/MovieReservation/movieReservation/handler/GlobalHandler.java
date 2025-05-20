@@ -2,8 +2,9 @@ package MovieReservation.movieReservation.handler;
 
 import MovieReservation.movieReservation.dto.ExceptionResponse;
 import MovieReservation.movieReservation.exceptions.InvalidJwtToken;
+import MovieReservation.movieReservation.exceptions.SignupException;
 import MovieReservation.movieReservation.exceptions.UsernameNotFoundException;
-import MovieReservation.movieReservation.model.Status;
+import MovieReservation.movieReservation.exceptions.VerificationTokenException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,30 @@ public class GlobalHandler {
                 ExceptionResponse.builder().statusCode(HttpStatus.UNAUTHORIZED.value())
                         .message(ex.getMessage())
                         .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+                        .path(request.getRequestURI())
+                        .timestamp(java.time.ZonedDateTime.now().toString())
+                        .build()
+        );
+    }
+    @ExceptionHandler(VerificationTokenException.class)
+    public ResponseEntity<ExceptionResponse> handleVerificationException(VerificationTokenException ex,
+                                                                         HttpServletRequest request){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ExceptionResponse.builder().statusCode(HttpStatus.BAD_REQUEST.value())
+                        .message(ex.getMessage())
+                        .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                        .path(request.getRequestURI())
+                        .timestamp(java.time.ZonedDateTime.now().toString())
+                        .build()
+        );
+    }
+    @ExceptionHandler(SignupException.class)
+    public ResponseEntity<ExceptionResponse> handleSignupException(SignupException ex ,
+                                                                   HttpServletRequest request){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ExceptionResponse.builder().statusCode(HttpStatus.BAD_REQUEST.value())
+                        .message(ex.getMessage())
+                        .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
                         .path(request.getRequestURI())
                         .timestamp(java.time.ZonedDateTime.now().toString())
                         .build()

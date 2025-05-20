@@ -1,20 +1,17 @@
 package MovieReservation.movieReservation.service;
 
+import MovieReservation.movieReservation.exceptions.MailSendingExceptions;
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
-
-import javax.sound.midi.MetaMessage;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,7 +47,9 @@ public class EmailService {
             javaMailSender.send(mimeMessage);
             log.info("Email sent successfully");
 
-        }catch (Exception e){}
+        }catch (MailException | MessagingException e){
+            throw new MailSendingExceptions("Email sending failed. Please try again later. " + e.getMessage());
+        }
 
     }
 }

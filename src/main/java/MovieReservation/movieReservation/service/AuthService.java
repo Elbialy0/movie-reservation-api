@@ -1,6 +1,7 @@
 package MovieReservation.movieReservation.service;
 
 import MovieReservation.movieReservation.dto.SignupRequest;
+import MovieReservation.movieReservation.exceptions.SignupException;
 import MovieReservation.movieReservation.exceptions.UsernameNotFoundException;
 import MovieReservation.movieReservation.model.Role;
 import MovieReservation.movieReservation.model.Token;
@@ -33,7 +34,7 @@ public class AuthService {
 
     public void signup(SignupRequest request) {
         if(userRepo.findByUsername(request.getUsername()).isPresent()){
-            throw new RuntimeException("Username is already taken");
+            throw new SignupException("Username is already taken");
         }
         Role role = roleRepo.findById(1L).orElseThrow(() -> new RuntimeException("Role not found"));
         User user = User.builder()
