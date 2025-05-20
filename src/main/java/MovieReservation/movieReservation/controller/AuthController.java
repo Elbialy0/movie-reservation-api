@@ -1,8 +1,11 @@
 package MovieReservation.movieReservation.controller;
 
+import MovieReservation.movieReservation.dto.ForgetPasswordRequest;
 import MovieReservation.movieReservation.dto.SignupRequest;
 import MovieReservation.movieReservation.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +19,17 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody @Validated SignupRequest request){
         authService.signup(request);
-        return ResponseEntity.accepted().body("User signup successfully");
+        return ResponseEntity.status(HttpStatus.CREATED).body("User signup successfully");
     }
     @GetMapping("/activation/{token}")
     public ResponseEntity<String> activation(@PathVariable String token){
         authService.activate(token);
-        return ResponseEntity.accepted().body("User account activated successfully");
+        return ResponseEntity.status(HttpStatus.OK).body("User account activated successfully");
+    }
+    @PostMapping("/forgetPassword")
+    public ResponseEntity<String> forgetPassword(@RequestBody @Valid ForgetPasswordRequest request){
+        authService.forgetPassword(request.getEmail());
+        return ResponseEntity.status(HttpStatus.OK).body("Password reset link sent to your email");
     }
 
 

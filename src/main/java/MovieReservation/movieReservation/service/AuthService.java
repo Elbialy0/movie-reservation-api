@@ -6,7 +6,12 @@ import MovieReservation.movieReservation.model.Token;
 import MovieReservation.movieReservation.model.User;
 import MovieReservation.movieReservation.repository.RoleRepo;
 import MovieReservation.movieReservation.repository.UserRepo;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +21,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
@@ -42,7 +48,9 @@ public class AuthService {
         String  token = tokenService.createToken(request.getUsername());
         emailService.sendEmail(token,request.getUsername(),"Movie Reservation Account Activation",
                 "activate_account.html",String.format("http://localhost:8080/api/v1/auth/activation/%s", token)
+
         );
+        log.info(String.format("http://localhost:8080/api/v1/auth/activation/%s", token));
 
     }
 
@@ -57,5 +65,16 @@ public class AuthService {
         User user = dbToken.getUser();
         user.setEnabled(true);
         userRepo.save(user);
+    }
+
+    public void   forgetPassword(String email) {
+        if(!userRepo.findByUsername(email).isPresent()){
+            throw new RuntimeException("Username not found");
+        }
+        User user = userRepo.getByUsername(email);
+        String token = tokenService.createForgetToken(user);
+        emailService.sendEmail(String.format("http://localhost:8080/api/v1/auth/reset-password/%s", token),email,"Movie Reservation Password Reset",
+                "activate_account.html","");
+
     }
 }
