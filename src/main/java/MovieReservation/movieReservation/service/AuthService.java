@@ -2,6 +2,7 @@ package MovieReservation.movieReservation.service;
 
 import MovieReservation.movieReservation.dto.SignupRequest;
 import MovieReservation.movieReservation.model.Role;
+import MovieReservation.movieReservation.model.Token;
 import MovieReservation.movieReservation.model.User;
 import MovieReservation.movieReservation.repository.RoleRepo;
 import MovieReservation.movieReservation.repository.UserRepo;
@@ -20,6 +21,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepo roleRepo;
     private final EmailService emailService;
+    private final TokenService tokenService;
 
 
     public void signup(SignupRequest request) {
@@ -37,7 +39,11 @@ public class AuthService {
                 .roles(List.of(role))
                 .build();
         userRepo.save(user);
-//        emailService.properConfirmationEmail(user.getUsername());
+        String  token = tokenService.createToken(request.getUsername());
+        emailService.sendEmail(token,request.getUsername(),"Movie Reservation Account Activation",
+                "activate_account.html","http://localhost:8080/api/v1/auth/activation"
+        );
+
     }
 
     public Optional<User> getAuthentication() {

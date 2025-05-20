@@ -32,6 +32,13 @@ services:
     networks:
       - spring-demo
     restart: unless-stopped
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - spring-demo
+
 
 networks:
   spring-demo:
