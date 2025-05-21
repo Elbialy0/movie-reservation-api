@@ -1,6 +1,7 @@
 package MovieReservation.movieReservation.controller;
 
 import MovieReservation.movieReservation.dto.ForgetPasswordRequest;
+import MovieReservation.movieReservation.dto.ResetPasswordRequest;
 import MovieReservation.movieReservation.dto.SignupRequest;
 import MovieReservation.movieReservation.service.AuthService;
 import jakarta.validation.Valid;
@@ -30,6 +31,11 @@ public class AuthController {
     public ResponseEntity<String> forgetPassword(@RequestBody @Valid ForgetPasswordRequest request){
         authService.forgetPassword(request.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body("Password reset link sent to your email");
+    }
+    @PostMapping("/resetPassword")
+    public ResponseEntity<String> resetPassword(@RequestBody @Valid ResetPasswordRequest request){
+        authService.resetPassword(request);
+        return ResponseEntity.status(HttpStatus.OK).body("Password reset successfully");
     }
 
 

@@ -1,5 +1,6 @@
 package MovieReservation.movieReservation.service;
 
+import MovieReservation.movieReservation.dto.ResetPasswordRequest;
 import MovieReservation.movieReservation.dto.SignupRequest;
 import MovieReservation.movieReservation.exceptions.SignupException;
 import MovieReservation.movieReservation.exceptions.UsernameNotFoundException;
@@ -8,10 +9,6 @@ import MovieReservation.movieReservation.model.Token;
 import MovieReservation.movieReservation.model.User;
 import MovieReservation.movieReservation.repository.RoleRepo;
 import MovieReservation.movieReservation.repository.UserRepo;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,6 +27,7 @@ public class AuthService {
     private final RoleRepo roleRepo;
     private final EmailService emailService;
     private final TokenService tokenService;
+
 
 
     public void signup(SignupRequest request) {
@@ -79,4 +77,13 @@ public class AuthService {
                 "activate_account.html","");
 
     }
+
+    public void resetPassword( ResetPasswordRequest request) {
+        Token dbToken = tokenService.verify(request.getToken()); // verify the token
+        User user = dbToken.getUser(); // get the user associated with the token
+        user.setPassword(passwordEncoder.encode(request.getPassword())); // update the password
+        userRepo.save(user); // save the user with the new password
+    }
+
+
 }
