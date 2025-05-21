@@ -1,5 +1,7 @@
 package MovieReservation.movieReservation.service;
 
+import MovieReservation.movieReservation.dto.LoginRequest;
+import MovieReservation.movieReservation.dto.LoginResponse;
 import MovieReservation.movieReservation.dto.ResetPasswordRequest;
 import MovieReservation.movieReservation.dto.SignupRequest;
 import MovieReservation.movieReservation.exceptions.SignupException;
@@ -8,9 +10,15 @@ import MovieReservation.movieReservation.model.Role;
 import MovieReservation.movieReservation.model.Token;
 import MovieReservation.movieReservation.model.User;
 import MovieReservation.movieReservation.repository.RoleRepo;
+import MovieReservation.movieReservation.repository.TokenRepo;
 import MovieReservation.movieReservation.repository.UserRepo;
+import MovieReservation.movieReservation.security.JwtService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,7 +35,9 @@ public class AuthService {
     private final RoleRepo roleRepo;
     private final EmailService emailService;
     private final TokenService tokenService;
-
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+    private final TokenRepo tokenRepo;
 
 
     public void signup(SignupRequest request) {
@@ -86,4 +96,18 @@ public class AuthService {
     }
 
 
+    public LoginResponse login(@Valid LoginRequest request) {
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getUsername()
+                ,request.getPassword())
+        ); // validate the user using the authentication manager by the default provided in spring security
+        User user = (User) authentication.getPrincipal(); // get the user from the authentication object
+        String jwt = jwtService.generateJwtToken(user); // generate the jwt token for the user
+        String refreshToken = java.util.UUID.randomUUID().toString(); // generate a random refresh token for the user
+        tokenRepo.save(Token.builder().token(refreshToken).user(user).expirationDate(java.time.LocalDateTime.now().plusDays(7)).build()); // save the refresh token in the database with a 7 day expiration date
+
+        return LoginResponse.builder().jwtToken(jwt).refreshToken(refreshToken).build(); // return the jwt token and refresh token in the response object
+
+    }
 }
