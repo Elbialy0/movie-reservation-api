@@ -10,13 +10,15 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 @RequiredArgsConstructor
+@Component
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
-    private final AuthService authService;
+
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request,
                                     @NotNull HttpServletResponse response,
@@ -32,7 +34,7 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
         final String token = authorizationHeader.substring(7);
-        if(authService.getAuthentication().isEmpty()){
+        if(SecurityContextHolder.getContext().getAuthentication()==null){
             // validate the token
               Authentication authentication =  jwtService.validate(token);
               if(authentication != null) {

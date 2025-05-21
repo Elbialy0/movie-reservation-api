@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -56,6 +57,19 @@ public class GlobalHandler {
                 ExceptionResponse.builder().statusCode(HttpStatus.BAD_REQUEST.value())
                         .message(ex.getMessage())
                         .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                        .path(request.getRequestURI())
+                        .timestamp(java.time.ZonedDateTime.now().toString())
+                        .build()
+        );
+    }
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ExceptionResponse> handleBadCredentialsException(
+            BadCredentialsException ex , HttpServletRequest request
+    ){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                ExceptionResponse.builder().statusCode(HttpStatus.UNAUTHORIZED.value())
+                        .message(ex.getMessage())
+                        .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
                         .path(request.getRequestURI())
                         .timestamp(java.time.ZonedDateTime.now().toString())
                         .build()

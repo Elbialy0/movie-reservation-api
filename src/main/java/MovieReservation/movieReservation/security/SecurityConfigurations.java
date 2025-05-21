@@ -5,8 +5,10 @@ import MovieReservation.movieReservation.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -21,13 +23,9 @@ public class SecurityConfigurations {
     private final AuthenticationProvider authenticationProvider;
     private final Oauth2AuthenticationEntryPoint oauth2AuthenticationEntryPoint;
     private final CustomOAuth2AuthenticationSuccessHandler successHandler;
-    private final JwtService jwtService;
-    private final AuthService authService;
 
-    @Bean
-    public JwtFilter jwtFilter() {
-        return new JwtFilter(jwtService, authService);
-    }
+    private final JwtFilter jwtFilter;
+
     @Bean
     public DefaultSecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
@@ -45,9 +43,14 @@ public class SecurityConfigurations {
                 .exceptionHandling(ex ->
                         ex.authenticationEntryPoint(oauth2AuthenticationEntryPoint))
                 // Add JWT filter before UsernamePasswordAuthenticationFilter
-                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+
     }
 
 }
