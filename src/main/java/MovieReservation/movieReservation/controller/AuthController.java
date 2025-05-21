@@ -44,6 +44,11 @@ public class AuthController {
         authService.logout(request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+    @PostMapping("/refresh")
+    public ResponseEntity<LoginResponse> refresh(@RequestBody String refreshToken){
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(authService.refresh(refreshToken));
+
+    }
 
 
 

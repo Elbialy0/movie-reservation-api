@@ -116,4 +116,10 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(null);/// clear the authentication context if the user is logged out successfully
         log.info("User logged out successfully"); // log the user logout successfully in the console
     }
+
+    public LoginResponse refresh(String refreshToken) {
+        Token dbToken = tokenService.verify(refreshToken);
+        User user = dbToken.getUser();
+        return LoginResponse.builder().jwtToken(jwtService.generateJwtToken(user)).refreshToken(refreshToken).build();
+    }
 }
