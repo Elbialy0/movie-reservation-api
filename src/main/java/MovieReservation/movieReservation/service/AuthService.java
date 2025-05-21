@@ -1,9 +1,6 @@
 package MovieReservation.movieReservation.service;
 
-import MovieReservation.movieReservation.dto.LoginRequest;
-import MovieReservation.movieReservation.dto.LoginResponse;
-import MovieReservation.movieReservation.dto.ResetPasswordRequest;
-import MovieReservation.movieReservation.dto.SignupRequest;
+import MovieReservation.movieReservation.dto.*;
 import MovieReservation.movieReservation.exceptions.SignupException;
 import MovieReservation.movieReservation.exceptions.UsernameNotFoundException;
 import MovieReservation.movieReservation.model.Role;
@@ -38,6 +35,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final TokenRepo tokenRepo;
+    private final JwtBlackListService jwtBlackListService;
 
 
     public void signup(SignupRequest request) {
@@ -109,5 +107,13 @@ public class AuthService {
 
         return LoginResponse.builder().jwtToken(jwt).refreshToken(refreshToken).build(); // return the jwt token and refresh token in the response object
 
+    }
+
+    public void logout(LogoutRequest request) {
+        Token refreshToken = tokenRepo.findByToken(request.getRefreshToken());// find the refresh token in the database
+        tokenRepo.delete(refreshToken);/// delete the refresh token from the database if it exists
+        jwtBlackListService.blacklistToken(request.getJwtToken(),864000); // blacklist the jwt token for 24 hours from now using the jwt blacklist service
+        SecurityContextHolder.getContext().setAuthentication(null);/// clear the authentication context if the user is logged out successfully
+        log.info("User logged out successfully"); // log the user logout successfully in the console
     }
 }
