@@ -1,17 +1,17 @@
 package MovieReservation.movieReservation.security;
 
+import MovieReservation.movieReservation.exceptions.CustomAuthenticationEntryPoint;
 import MovieReservation.movieReservation.filters.JwtFilter;
-import MovieReservation.movieReservation.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -23,7 +23,7 @@ public class SecurityConfigurations {
     private final AuthenticationProvider authenticationProvider;
     private final Oauth2AuthenticationEntryPoint oauth2AuthenticationEntryPoint;
     private final CustomOAuth2AuthenticationSuccessHandler successHandler;
-
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final JwtFilter jwtFilter;
 
     @Bean
@@ -33,17 +33,21 @@ public class SecurityConfigurations {
                 .sessionManagement(session->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth->
-                        auth.requestMatchers(
+                        auth.requestMatchers("/auth/logout").authenticated().
+                        requestMatchers(
                                 "/auth/**",
                                 "/error","/oauth2/authorization/google"
 
                         ).permitAll().anyRequest().authenticated())
+
                 .authenticationProvider(authenticationProvider)
                 .oauth2Login(auth->auth.successHandler(successHandler))
-                .exceptionHandling(ex ->
-                        ex.authenticationEntryPoint(oauth2AuthenticationEntryPoint))
-                // Add JWT filter before UsernamePasswordAuthenticationFilter
+                .exceptionHandling(eh->eh.authenticationEntryPoint(oauth2AuthenticationEntryPoint))
+                .exceptionHandling(eh->eh.authenticationEntryPoint(customAuthenticationEntryPoint))
+
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+
 
         return http.build();
     }

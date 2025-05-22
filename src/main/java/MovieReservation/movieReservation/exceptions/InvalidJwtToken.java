@@ -1,8 +1,11 @@
 package MovieReservation.movieReservation.exceptions;
 
-import io.jsonwebtoken.ExpiredJwtException;
 
-public class InvalidJwtToken extends RuntimeException  {
+import org.springframework.security.authentication.BadCredentialsException;
+
+import javax.naming.AuthenticationException;
+
+public class InvalidJwtToken extends AuthenticationException {
     public InvalidJwtToken(String message) {
         super(message);
     }

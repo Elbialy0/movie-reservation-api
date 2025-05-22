@@ -109,11 +109,12 @@ public class AuthService {
 
     }
 
-    public void logout(LogoutRequest request) {
-        Token refreshToken = tokenRepo.findByToken(request.getRefreshToken());// find the refresh token in the database
-        tokenRepo.delete(refreshToken);/// delete the refresh token from the database if it exists
-        jwtBlackListService.blacklistToken(request.getJwtToken(),864000); // blacklist the jwt token for 24 hours from now using the jwt blacklist service
-        SecurityContextHolder.getContext().setAuthentication(null);/// clear the authentication context if the user is logged out successfully
+    public void logout(String jwt,String token) {
+
+        Token refreshToken = tokenService.verify(token);// find the refresh token in the database
+        tokenRepo.delete(refreshToken);// delete the refresh token from the database if it exists
+        jwtBlackListService.blacklistToken(jwt,864000); // blacklist the jwt token for 24 hours from now using the jwt blacklist service
+        SecurityContextHolder.getContext().setAuthentication(null);// clear the authentication context if the user is logged out successfully
         log.info("User logged out successfully"); // log the user logout successfully in the console
     }
 

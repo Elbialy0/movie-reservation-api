@@ -10,6 +10,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.annotation.Target;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -41,8 +43,8 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(authService.login(request));
     }
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@RequestBody @Valid LogoutRequest request){
-        authService.logout(request);
+    public ResponseEntity<Void> logout(@RequestHeader("Authorization") String jwt,@RequestBody String  token){
+        authService.logout(jwt, token);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
     @PostMapping("/refresh")

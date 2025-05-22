@@ -4,12 +4,12 @@ import MovieReservation.movieReservation.exceptions.InvalidJwtToken;
 import MovieReservation.movieReservation.model.User;
 import MovieReservation.movieReservation.service.CustomUserService;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -50,7 +50,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public Authentication validate(String token) {
+    public Authentication validate(String token) throws InvalidJwtToken {
         try {
             // Validate the token and extract the claims
             Claims claims = Jwts.parser()
@@ -60,13 +60,12 @@ public class JwtService {
                     .getPayload();
             // Check the expiration
             if(claims.getExpiration().before(new Date())){
-                // todo InvalidJwtTokenException
-                throw new InvalidJwtToken("Token expired");
+                throw new BadCredentialsException("Token expired");
             }
 
             // Check the authorities were existed or not
             if(claims.get("authorities", List.class) == null){
-                throw new InvalidJwtToken("Invalid token");
+               throw new InvalidJwtToken("No authorities found in the token");
             }
             // Extract username
             var username = claims.getSubject();
@@ -75,7 +74,7 @@ public class JwtService {
             // Extract authorities
             @SuppressWarnings("unchecked")
             List<String> rawAuthorities = claims.get("authorities", List.class);
-            if (rawAuthorities == null) throw new InvalidJwtToken("Invalid token");
+            if (rawAuthorities == null) throw new InvalidJwtToken("No authorities found in the token");
 
             var authorities = rawAuthorities.stream()
                     .map(SimpleGrantedAuthority::new)
@@ -84,11 +83,8 @@ public class JwtService {
 
             // Generate the Authentication token
             return new UsernamePasswordAuthenticationToken(user, null, authorities);
-        } catch (ExpiredJwtException e) {
-            throw new InvalidJwtToken("Token expired");
-        }
-        catch (Exception e){
-            throw new InvalidJwtToken("Invalid token");
+        } catch (Exception e){
+           throw new BadCredentialsException("Invalid Token");
         }
 
 

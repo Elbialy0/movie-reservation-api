@@ -6,12 +6,14 @@ import MovieReservation.movieReservation.model.User;
 import MovieReservation.movieReservation.repository.TokenRepo;
 import MovieReservation.movieReservation.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TokenService {
     private final TokenRepo tokenRepo;
     private final UserRepo userRepo;
@@ -44,6 +46,7 @@ public class TokenService {
 
     public Token verify(String token) {
         Token dbToken = tokenRepo.findByToken(token);
+        log.info(token);
         if(dbToken == null){
             throw new VerificationTokenException("Token not found. Please try again or sign up again.");
         }
