@@ -35,32 +35,48 @@ public class JwtFilter extends OncePerRequestFilter {
                                     @NotNull HttpServletResponse response,
                                     @NotNull FilterChain filterChain) throws ServletException, IOException {
 
-        if(!request.getRequestURI().equals("/api/v1/auth/logout")&&request.getRequestURI().startsWith("/api/v1/auth")){
+        try {
+            if (!request.getRequestURI().equals("/api/v1/auth/logout") && request.getRequestURI().startsWith("/api/v1/auth")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+            if (request.getHeader("Authorization") != null && jwtBlackListService.isTokenBlacklisted(request.getHeader("Authorization"))) {
+                throw new InvalidJwtToken("Token is blacklisted");
+
+            }
+            final String authorizationHeader = request.getHeader("Authorization");
+            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+            final String token = authorizationHeader.substring(7);
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                // validate the token
+                Authentication authentication = jwtService.validate(token);
+                if (authentication != null) {
+                    // save the authentication in the context holder
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+
+            }
+
             filterChain.doFilter(request, response);
-            return;
-        }
-        if(jwtBlackListService.isTokenBlacklisted(request.getHeader("Authorization"))){
-            throw new InvalidJwtToken("Token is blacklisted");
+        } catch (Exception ex){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
 
-        }
-        final String authorizationHeader = request.getHeader("Authorization");
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-        final String token = authorizationHeader.substring(7);
-        if(SecurityContextHolder.getContext().getAuthentication()==null){
-            // validate the token
-              Authentication authentication =  jwtService.validate(token);
-              if(authentication != null) {
-                  // save the authentication in the context holder
-                  SecurityContextHolder.getContext().setAuthentication(authentication);
-              }
+            Map<String, Object> body = new LinkedHashMap<>();
+            body.put("timestamp", LocalDateTime.now().toString());
+            body.put("status", 401);
+            body.put("error", "Unauthorized");
+            body.put("message", ex.getMessage() );
+            body.put("path", request.getRequestURI());
 
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(response.getWriter(), body);
+        }
         }
 
-        filterChain.doFilter(request, response);
-    }
 
 
 }
