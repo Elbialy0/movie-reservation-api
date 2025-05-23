@@ -41,4 +41,5 @@ public class Movie {
     private String lastModifiedBy;
     @OneToMany(mappedBy = "movie")
     private List<ShowTime> showTimes;
+    private Boolean isAvailable;
 }
