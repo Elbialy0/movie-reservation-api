@@ -38,7 +38,7 @@ public class Movie {
     @Column(nullable = false)
     private LocalDate lastModifiedDate;
     @LastModifiedBy
-    private String lastModifiedBy;
+    private Integer lastModifiedBy;
     @OneToMany(mappedBy = "movie")
     private List<ShowTime> showTimes;
     private Boolean isAvailable;

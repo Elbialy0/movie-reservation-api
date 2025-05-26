@@ -18,4 +18,8 @@ public class AddMovieRequest {
     @NotEmpty(message = "The movie must have description")
     @NotBlank(message = "The movie must have description")
     String description;
+    @NotNull(message = "The movie must have genre")
+    @NotEmpty(message = "The movie must have genre")
+    @NotBlank(message = "The movie must have genre")
+    String genre;
 }
