@@ -42,4 +42,15 @@ public class Movie {
     @OneToMany(mappedBy = "movie")
     private List<ShowTime> showTimes;
     private Boolean isAvailable;
+
+    @OneToMany(mappedBy = "movie")
+    private List<Feedback> feedbacks;
+
+    public int getAverageRate(){
+        int sum = 0;
+        for (Feedback feedback : feedbacks) {
+            sum += feedback.getRate();
+        }
+        return sum / feedbacks.size();
+    }
 }

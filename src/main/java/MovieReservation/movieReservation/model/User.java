@@ -84,4 +84,7 @@ public class User implements UserDetails , Principal {
     public boolean isEnabled() {
         return enabled;
     }
+
+    @OneToMany(mappedBy = "user")
+    private List<Feedback> feedbacks;
 }

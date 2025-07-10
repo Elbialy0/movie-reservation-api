@@ -12,7 +12,6 @@ import MovieReservation.movieReservation.repository.MovieRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.UrlResource;
-import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
@@ -90,6 +89,7 @@ public class MovieService {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void activateMovie(int movieId) {
         Movie movie = movieRepo.findById((long) movieId).orElseThrow(()->new MovieException(
                 "Movie not found"
