@@ -2,6 +2,7 @@ package MovieReservation.movieReservation.controller;
 
 import MovieReservation.movieReservation.dto.AddMovieRequest;
 import MovieReservation.movieReservation.dto.MovieResponse;
+import MovieReservation.movieReservation.dto.PageResponse;
 import MovieReservation.movieReservation.service.MovieService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.web.service.annotation.GetExchange;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,14 +49,21 @@ public class MovieController {
         return ResponseEntity.ok(movieService.getMovie(movieId));
 
     }
-    @GetMapping("/cover/{url}")
-    public ResponseEntity<UrlResource> getCover(@PathVariable("url")String url) throws MalformedURLException {
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(movieService.getCover(url));
+    @GetMapping("/cover/{id}")
+    public ResponseEntity<UrlResource> getCover(@PathVariable("id")int id) throws MalformedURLException {
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(movieService.getCover(id));
     }
     @PutMapping("/activate/{movie-id}")
     public ResponseEntity<String> activateMovie(@PathVariable(name = "movie-id") int movieId){
         movieService.activateMovie(movieId);
         return ResponseEntity.ok().body("Movie activated successfully");
+
+    }
+    @GetMapping
+    public ResponseEntity<PageResponse<MovieResponse>> getAllMovies(@RequestParam(defaultValue = "0") int page
+            , @RequestParam(defaultValue = "10") int size){
+        return ResponseEntity.ok().body(movieService.getAllmovies(page, size));
+        
 
     }
 

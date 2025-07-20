@@ -2,6 +2,7 @@ package MovieReservation.movieReservation.service;
 
 import MovieReservation.movieReservation.dto.AddMovieRequest;
 import MovieReservation.movieReservation.dto.MovieResponse;
+import MovieReservation.movieReservation.dto.PageResponse;
 import MovieReservation.movieReservation.exceptions.MovieException;
 import MovieReservation.movieReservation.mapper.Mapper;
 import MovieReservation.movieReservation.model.Genre;
@@ -12,6 +13,10 @@ import MovieReservation.movieReservation.repository.MovieRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
@@ -24,7 +29,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -83,9 +92,10 @@ public class MovieService {
         return mapper.mapToMovieResponse(movie);
     }
 
-    public UrlResource getCover(String url) throws MalformedURLException {
-        Path path = Paths.get(url);
-        return new UrlResource(path.toUri());
+    public UrlResource getCover(int id) throws MalformedURLException {
+        Movie movie = movieRepo.findById((long) id).orElseThrow(()->new MovieException("Movie not found"));
+        return new UrlResource(Path.of(movie.getPoster()).toUri());
+
 
     }
 
@@ -96,6 +106,26 @@ public class MovieService {
         ));
         movie.setIsAvailable(true);
         movieRepo.save(movie);
+
+    }
+
+    public PageResponse<MovieResponse> getAllmovies(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size,Sort.by("title").ascending());
+        Page<Movie> movies = movieRepo.findAll(pageable);
+        List<Movie> moviesList = movies.getContent();
+        List<MovieResponse> movieResponses = moviesList.stream().map(mapper::mapToMovieResponse).toList();
+        return new PageResponse<>(
+                movieResponses,
+                movies.getNumber(),
+                movies.getNumberOfElements(),
+                movies.getSize(),
+                movies.getTotalPages(),
+                movies.isFirst(),
+                movies.isLast()
+
+        );
+
+
 
     }
 }
