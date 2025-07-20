@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.service.annotation.GetExchange;
@@ -66,12 +67,18 @@ public class MovieController {
         
 
     }
-    @GetMapping("/{filter}")
-    public ResponseEntity<PageResponse<MovieResponse>> getMovieByGenre(@PathVariable(name = "filter")String filter,
+    @GetMapping("/filter")
+    public ResponseEntity<PageResponse<MovieResponse>> getMovieByGenre(@RequestParam(name = "filter")String filter,
                                                                        @RequestParam(defaultValue = "0")int page,
                                                                        @RequestParam(defaultValue = "10") int size){
 
         return ResponseEntity.ok().body(movieService.getByGenre(filter,page,size));
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping
+    public ResponseEntity<String> deleteMovie(@RequestParam(name = "movie-id")int movieId){
+        movieService.deleteMovie(movieId);
+        return ResponseEntity.ok().body("Movie deleted successfully");
     }
 
 

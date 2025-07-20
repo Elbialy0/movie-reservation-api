@@ -49,11 +49,16 @@ public class MovieService {
     public void addMovie( AddMovieRequest request) {
         User user = authService.getAuthentication().orElseThrow(()->new BadCredentialsException("Forbidden"));
         Genre genre = genreRepo.findByName(request.getGenre());
-        movieRepo.save(Movie.builder().user(user).title(request.getTitle()).description(request.getDescription())
-                .isAvailable(false).genre(genre).build());
+        Optional<Movie> movie = movieRepo.findByTitle(request.getTitle());
+        if (movie.isEmpty()) {
+            movieRepo.save(Movie.builder().user(user).title(request.getTitle()).description(request.getDescription())
+                    .isAvailable(false).genre(genre).build());
+        }
+        else {
+            throw new MovieException("Movie already exists");
+        }
 
-//        movieRepo.save(Movie.builder().title(request.getTitle())
-//                .description(request.getDescription()).isAvailable(false).build());
+
         }
         @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void addPoster(Long movieId, MultipartFile poster) throws IOException {
@@ -144,5 +149,11 @@ public class MovieService {
                 movies.isLast()
 
         );
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public void deleteMovie(int movieId) {
+        Movie movie = movieRepo.findById((long) movieId).orElseThrow(()->new MovieException("Movie not found"));
+        movieRepo.delete(movie);
     }
 }
