@@ -128,4 +128,21 @@ public class MovieService {
 
 
     }
+
+    public PageResponse<MovieResponse> getByGenre(String filter,int page, int size) {
+        Genre genre = genreRepo.findByName(filter);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("title").ascending());
+        Page<Movie> movies = movieRepo.findByFilter(pageable,genre.getId());
+        List<MovieResponse> movieResponses = movies.getContent().stream().map(mapper::mapToMovieResponse).toList();
+        return new PageResponse<>(
+                movieResponses,
+                movies.getNumber(),
+                movies.getNumberOfElements(),
+                movies.getSize(),
+                movies.getTotalPages(),
+                movies.isFirst(),
+                movies.isLast()
+
+        );
+    }
 }

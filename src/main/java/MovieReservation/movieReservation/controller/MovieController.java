@@ -66,6 +66,13 @@ public class MovieController {
         
 
     }
+    @GetMapping("/{filter}")
+    public ResponseEntity<PageResponse<MovieResponse>> getMovieByGenre(@PathVariable(name = "filter")String filter,
+                                                                       @RequestParam(defaultValue = "0")int page,
+                                                                       @RequestParam(defaultValue = "10") int size){
+
+        return ResponseEntity.ok().body(movieService.getByGenre(filter,page,size));
+    }
 
 
 
