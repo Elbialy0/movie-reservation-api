@@ -7,10 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,7 +17,20 @@ public class ShowTimeController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/new")
-    public ResponseEntity<String > addNewShow(@RequestBody ShowTimeRequest request){
+    public ResponseEntity<Long > addNewShow(@RequestBody ShowTimeRequest request){
         return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(showTimeService.createNewShowTime(request));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/update/{id}")
+    public ResponseEntity<String > updateShow(@PathVariable(name = "id")long id,@RequestBody ShowTimeRequest request){
+        showTimeService.updateShow(request,id);
+        return ResponseEntity.ok().body("Show time updated successfully");
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String > deleteShow(@PathVariable(name = "id")long id){
+        showTimeService.deleteShow(id);
+        return ResponseEntity.ok().body("Show time deleted successfully");
     }
 }
