@@ -18,5 +18,10 @@ public interface MovieRepo extends JpaRepository<Movie, Long> {
 select e from Movie e where e.genre.id = :id""")
     Page<Movie> findByFilter(Pageable pageable, Long id);
 
+
+    @Query("""
+select e from Movie e where e.isAvailable = true""")
+    Page<Movie> findAvailableMovies(Pageable pageable);
+
     Optional<Movie> findByTitle(@NotNull(message = "The movie must have title") @NotEmpty(message = "The movie must have title") @NotBlank(message = "The movie must have title") String title);
 }

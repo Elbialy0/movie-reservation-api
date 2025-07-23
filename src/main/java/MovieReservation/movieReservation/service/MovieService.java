@@ -156,4 +156,28 @@ public class MovieService {
         Movie movie = movieRepo.findById((long) movieId).orElseThrow(()->new MovieException("Movie not found"));
         movieRepo.delete(movie);
     }
+
+    public List<MovieResponse> getByRate(int rate) {
+        List<Movie> movies = movieRepo.findAll();
+        return movies.stream().filter(m->m.getAverageRate()>=rate)
+                .map(mapper::mapToMovieResponse).toList();
+
+    }
+
+    public PageResponse<MovieResponse> getAvailableMovies(int page, int size) {
+        Pageable pageable = PageRequest.of(page,size,Sort.by("title").ascending());
+        Page<Movie> movies = movieRepo.findAvailableMovies(pageable);
+        List<MovieResponse> content = movies.getContent().stream().map(mapper::mapToMovieResponse).toList();
+        return new PageResponse<>(
+                content,
+                movies.getNumber(),
+                movies.getNumberOfElements(),
+                movies.getSize(),
+                movies.getTotalPages(),
+                movies.isFirst(),
+                movies.isLast()
+        );
+
+
+    }
 }

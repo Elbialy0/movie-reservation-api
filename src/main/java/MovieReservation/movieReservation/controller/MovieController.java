@@ -80,6 +80,15 @@ public class MovieController {
         movieService.deleteMovie(movieId);
         return ResponseEntity.ok().body("Movie deleted successfully");
     }
+    @GetMapping("rate/{rate}")
+    public ResponseEntity<List<MovieResponse>> getByRate(@PathVariable(name = "rate")int rate){
+        return ResponseEntity.ok().body(movieService.getByRate(rate));
+    }
+    @GetMapping("/available")
+    public ResponseEntity<PageResponse<MovieResponse> >getAvailableMovies(@RequestParam(name = "page",defaultValue = "0")int page,
+                                                                                @RequestParam(name = "size",defaultValue = "10")int size){
+        return ResponseEntity.ok().body(movieService.getAvailableMovies(page,size));
+    }
 
 
 
