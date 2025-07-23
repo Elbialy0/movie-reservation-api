@@ -26,6 +26,7 @@ import java.util.List;
 public class MovieController {
     private final MovieService movieService;
     // todo security configurations
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<String> addNewMovie(@RequestBody @Valid AddMovieRequest request){
         movieService.addMovie(request);

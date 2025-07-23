@@ -33,13 +33,15 @@ public class ShowTimeService {
     private final Mapper mapper;
 
     public long createNewShowTime(ShowTimeRequest request) {
-      return    showTimeRepo.save(ShowTime.builder().time(request.getTime()).reservations(new ArrayList<>()).price(request.getPrice()
+      ShowTime showTime = showTimeRepo.save(ShowTime.builder().time(request.getTime()).reservations(new ArrayList<>()).price(request.getPrice()
         ).movie(movieRepo.findById((long) request.getMovieId()).orElseThrow(()
         ->new RuntimeException("Movie not found"))).hall(hallRepo.findById((long)request.getHallId()).orElseThrow(
                 ()-> new RuntimeException("Hall not found")
-        )).price(request.getPrice()).build()).getId();
+        )).price(request.getPrice()).build());
+      emailService.sendEmailForAll("Add new show","New movie you can watch :| ","show_time.html","http://localhost:8080/api/v1/auth/reservation/reserve",showTime);
 
 
+      return showTime.getId();
 
     }
 

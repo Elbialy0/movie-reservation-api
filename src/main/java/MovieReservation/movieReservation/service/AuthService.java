@@ -54,7 +54,7 @@ public class AuthService {
                 .build();
         userRepo.save(user);
         String  token = tokenService.createToken(request.getUsername());
-        emailService.sendEmail(token,request.getUsername(),"Movie Reservation Account Activation",
+        emailService.sendEmailForActivation(token,request.getUsername(),"Movie Reservation Account Activation",
                 "activate_account.html",String.format("http://localhost:8080/api/v1/auth/activation/%s", token)
 
         );
@@ -81,8 +81,8 @@ public class AuthService {
         }
         User user = userRepo.getByUsername(email);
         String token = tokenService.createForgetToken(user);
-        emailService.sendEmail(String.format("http://localhost:8080/api/v1/auth/reset-password/%s", token),email,"Movie Reservation Password Reset",
-                "activate_account.html","");
+        emailService.sendEmailForForgetPassword(String.format("http://localhost:8080/api/v1/auth/reset-password/%s", token),email,"Movie Reservation Password Reset",
+                "reset_password.html");
 
     }
 
