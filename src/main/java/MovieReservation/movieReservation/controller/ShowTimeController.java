@@ -1,6 +1,8 @@
 package MovieReservation.movieReservation.controller;
 
+import MovieReservation.movieReservation.dto.PageResponse;
 import MovieReservation.movieReservation.dto.ShowTimeRequest;
+import MovieReservation.movieReservation.dto.ShowTimeResponse;
 import MovieReservation.movieReservation.model.ShowTime;
 import MovieReservation.movieReservation.service.ShowTimeService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,5 +34,11 @@ public class ShowTimeController {
     public ResponseEntity<String > deleteShow(@PathVariable(name = "id")long id){
         showTimeService.deleteShow(id);
         return ResponseEntity.ok().body("Show time deleted successfully");
+    }
+    @GetMapping("/filter")
+    public ResponseEntity<PageResponse<ShowTimeResponse>> getShowsByType(@RequestParam(name = "genre")String genre,
+                                                                         @RequestParam(name = "page",defaultValue = "0")int page,
+                                                                         @RequestParam(name = "size",defaultValue = "10")int size){
+        return ResponseEntity.ok().body(showTimeService.getByType(genre,page,size));
     }
 }

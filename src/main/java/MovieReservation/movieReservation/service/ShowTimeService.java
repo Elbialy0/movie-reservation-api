@@ -1,6 +1,9 @@
 package MovieReservation.movieReservation.service;
 
+import MovieReservation.movieReservation.dto.PageResponse;
 import MovieReservation.movieReservation.dto.ShowTimeRequest;
+import MovieReservation.movieReservation.dto.ShowTimeResponse;
+import MovieReservation.movieReservation.mapper.Mapper;
 import MovieReservation.movieReservation.model.ShowTime;
 import MovieReservation.movieReservation.repository.HallRepo;
 import MovieReservation.movieReservation.repository.MovieRepo;
@@ -8,10 +11,15 @@ import MovieReservation.movieReservation.repository.PaymentRepo;
 import MovieReservation.movieReservation.repository.ShowTimeRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Limit;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +30,7 @@ public class ShowTimeService {
     private final EmailService emailService;
     private final MovieRepo movieRepo;
     private final PaymentRepo paymentRepo;
+    private final Mapper mapper;
 
     public long createNewShowTime(ShowTimeRequest request) {
       return    showTimeRepo.save(ShowTime.builder().time(request.getTime()).reservations(new ArrayList<>()).price(request.getPrice()
@@ -57,5 +66,20 @@ public class ShowTimeService {
         );
         showTimeRepo.delete(showTime);
         log.info("Show time deleted successfully");
+    }
+
+    public PageResponse<ShowTimeResponse> getByType(String genre, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ShowTime> showTimes = showTimeRepo.findAllByGenre(pageable,genre);
+        List<ShowTimeResponse> content = showTimes.stream().map(mapper::mapToShowTimeResponse).toList();
+        return new PageResponse<>(
+                content,
+                showTimes.getNumber(),
+                showTimes.getNumberOfElements(),
+                showTimes.getSize(),
+                showTimes.getTotalPages(),
+                showTimes.isFirst(),
+                showTimes.isLast()
+        );
     }
 }
