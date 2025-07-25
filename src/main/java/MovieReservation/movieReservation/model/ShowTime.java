@@ -28,4 +28,5 @@ public class ShowTime {
     @OneToMany(mappedBy = "showTime")
     private List<Reservation> reservations;
     private double price;
+
 }
