@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Required</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #d32f2f;
+        }
+        p {
+            color: #333333;
+        }
+        .details {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff8e1;
+            border-left: 4px solid #ffa000;
+        }
+        .amount {
+            font-size: 20px;
+            font-weight: bold;
+            color: #388e3c;
+        }
+        .info-table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+        }
+        .info-table th, .info-table td {
+            text-align: left;
+            padding: 8px;
+        }
+        .info-table th {
+            background-color: #f0f0f0;
+        }
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #1976d2;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #888888;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Payment Required</h2>
+    <p>Dear <span th:text="${userName}">User</span>,</p>
+    <p>Your reservation is pending. Please complete your payment before the deadline to confirm your booking.</p>
+
+    <div class="details">
+        <p><strong>Amount Due:</strong> <span class="amount" th:text="${amount}">$50.00</span></p>
+        <p><strong>Deadline:</strong> <span th:text="${deadline}">2025-07-23 15:00</span></p>
+
+        <table class="info-table">
+            <tr>
+                <th>Reservation ID</th>
+                <td th:text="${reservationId}">123456</td>
+            </tr>
+            <tr>
+                <th>Hall ID</th>
+                <td th:text="${hallId}">Hall-5</td>
+            </tr>
+            <tr>
+                <th>Seat ID</th>
+                <td th:text="${seatId}">A12</td>
+            </tr>
+        </table>
+    </div>
+
+    <a class="btn" th:href="${paymentLink}">Pay Now</a>
+
+    <p class="footer">
+        If payment is not completed before the deadline, your reservation will be cancelled automatically.<br>
+        &copy; 2025 Movie Reservation System.
+    </p>
+</div>
+</body>
+</html>

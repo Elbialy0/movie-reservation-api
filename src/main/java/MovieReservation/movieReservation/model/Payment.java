@@ -28,7 +28,6 @@ public class Payment {
     @Column(length = 255)
     private String cardHolderName;
 
-    @Column(length = 10)
     private LocalDateTime expirationDate;
     @OneToOne
     @JoinColumn(name = "reservation_id")

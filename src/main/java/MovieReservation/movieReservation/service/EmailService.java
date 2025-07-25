@@ -1,6 +1,7 @@
 package MovieReservation.movieReservation.service;
 
 import MovieReservation.movieReservation.exceptions.MailSendingExceptions;
+import MovieReservation.movieReservation.model.Reservation;
 import MovieReservation.movieReservation.model.ShowTime;
 import MovieReservation.movieReservation.model.User;
 import MovieReservation.movieReservation.repository.UserRepo;
@@ -82,5 +83,18 @@ public class EmailService {
 
 
 
+    }
+
+    @Async
+    public void sendReservationEmail(Long id, Reservation reservation) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("userName",reservation.getUser().getUsername());
+        model.put("amount", reservation.getPayment().getAmount());
+        model.put("reservationId",reservation.getId());
+        model.put("deadline",reservation.getPayment().getExpirationDate());
+        model.put("hallId",reservation.getShowTime().getHall().getId());
+        model.put("seatId",reservation.getSeat().getId());
+        model.put("paymentLink",String.format("http://localhost:8080/api/v1/payment/pay/%s",id));
+        sendEmail(model,reservation.getUser().getUsername(),"Reservation Confirmation", "reservation.html");
     }
 }

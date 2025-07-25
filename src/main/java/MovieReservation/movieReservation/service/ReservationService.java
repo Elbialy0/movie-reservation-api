@@ -21,6 +21,7 @@ public class ReservationService {
     private final ShowTimeRepo showTimeRepo;
     private final PaymentRepo paymentRepo;
     private final AuthService authService;
+    private final EmailService emailService;
 
 
     public long reserve(long id) {
@@ -50,12 +51,10 @@ public class ReservationService {
        payment.setExpirationDate(LocalDateTime.now().minusHours(2));
        paymentRepo.save(payment);
        reservation.setPayment(payment);
-       long reservationId = reservationRepo.save(reservation).getId();
+       emailService.sendReservationEmail(payment.getId(),reservation);
 
 
-
-
-
+        return reservationRepo.save(reservation).getId();
     }
 
     private Seat getAvailableSeat(Hall hall) {
