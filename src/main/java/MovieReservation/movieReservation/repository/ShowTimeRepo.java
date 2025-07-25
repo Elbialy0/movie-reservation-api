@@ -13,4 +13,8 @@ public interface ShowTimeRepo extends JpaRepository<ShowTime, Long> {
 select s from ShowTime s where s.movie.genre.name = :genre""")
 
     Page<ShowTime> findAllByGenre(Pageable pageable, String genre);
+    @Query("""
+select s from ShowTime s where s.movie.title=:movieTitle""")
+
+    Page<ShowTime> findByMovieTitle(Pageable pageable, String movieTitle);
 }

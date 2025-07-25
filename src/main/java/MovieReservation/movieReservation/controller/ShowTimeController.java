@@ -41,4 +41,21 @@ public class ShowTimeController {
                                                                          @RequestParam(name = "size",defaultValue = "10")int size){
         return ResponseEntity.ok().body(showTimeService.getByType(genre,page,size));
     }
+    @GetMapping("/all")
+    public ResponseEntity<PageResponse<ShowTimeResponse>> getAllShows(@RequestParam(name = "page", defaultValue = "0")int page,
+                                                                      @RequestParam(name = "size", defaultValue = "10")int size){
+        return ResponseEntity.ok().body(showTimeService.getAll(page , size));
+
+
+    }
+    @GetMapping("/findMovie")
+    public ResponseEntity<PageResponse<ShowTimeResponse>> getByMovie(@RequestParam(name="movieTitle")String movieTitle,
+                                                                     @RequestParam(name = "page", defaultValue = "0")int page ,
+                                                                     @RequestParam(name = "size", defaultValue = "10") int size){
+        return ResponseEntity.ok().body(showTimeService.getByMovieTitle(movieTitle,page,size));
+    }
+    @GetMapping("{id}")
+    public ResponseEntity<ShowTimeResponse> getShowById(@PathVariable(name = "id")long id){
+        return ResponseEntity.ok().body(showTimeService.getShowTime(id));
+    }
 }

@@ -73,7 +73,7 @@ public class ShowTimeService {
     public PageResponse<ShowTimeResponse> getByType(String genre, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ShowTime> showTimes = showTimeRepo.findAllByGenre(pageable,genre);
-        List<ShowTimeResponse> content = showTimes.stream().map(mapper::mapToShowTimeResponse).toList();
+        List<ShowTimeResponse> content = showTimes.getContent().stream().map(mapper::mapToShowTimeResponse).toList();
         return new PageResponse<>(
                 content,
                 showTimes.getNumber(),
@@ -83,5 +83,41 @@ public class ShowTimeService {
                 showTimes.isFirst(),
                 showTimes.isLast()
         );
+    }
+
+    public PageResponse<ShowTimeResponse> getAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ShowTime> showTimes = showTimeRepo.findAll(pageable);
+        List<ShowTimeResponse> content = showTimes.getContent().stream().map(mapper::mapToShowTimeResponse).toList();
+        return new PageResponse<>(
+                content,
+                showTimes.getNumber(),
+                showTimes.getNumberOfElements(),
+                showTimes.getSize(),
+                showTimes.getTotalPages(),
+                showTimes.isFirst(),
+                showTimes.isLast()
+        );
+    }
+
+    public PageResponse<ShowTimeResponse> getByMovieTitle(String movieTitle, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ShowTime> showTimes = showTimeRepo.findByMovieTitle(pageable, movieTitle);
+        List<ShowTimeResponse> content = showTimes.getContent().stream().map(mapper::mapToShowTimeResponse).toList();
+        return new PageResponse<>(
+                content,
+                showTimes.getNumber(),
+                showTimes.getNumberOfElements(),
+                showTimes.getSize(),
+                showTimes.getTotalPages(),
+                showTimes.isFirst(),
+                showTimes.isLast()
+        );
+
+    }
+
+    public ShowTimeResponse getShowTime(long id) {
+        ShowTime showTime = showTimeRepo.findById(id).orElseThrow(()->new RuntimeException("Show time not found"));
+        return mapper.mapToShowTimeResponse(showTime);
     }
 }
