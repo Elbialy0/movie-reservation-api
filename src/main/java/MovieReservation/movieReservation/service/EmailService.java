@@ -9,10 +9,10 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.connection.ReactiveListCommands;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
@@ -31,6 +31,7 @@ public class EmailService {
     private final SpringTemplateEngine templateEngine;
     private final UserRepo userRepo;
     @Async
+    @Retryable
     public void sendEmailForActivation(String token,  String username,String subject,String templateName,String url){
         Map<String, Object> model = new HashMap<>();
         model.put("activation_code", token);
@@ -62,6 +63,7 @@ public class EmailService {
     }
 
     @Async
+    @Retryable
     public void sendEmailForForgetPassword(String format, String email, String movieReservationPasswordReset, String s) {
         Map<String, Object> model = new HashMap<>();
         model.put("username", email);
@@ -70,6 +72,8 @@ public class EmailService {
 
     }
 
+    @Async
+    @Retryable
     public void sendEmailForAll(String addNewShow, String s, String s1, String url, ShowTime showTime) {
         Map<String, Object> model = new HashMap<>();
         model.put("movieTitle",showTime.getMovie().getTitle());
@@ -86,6 +90,7 @@ public class EmailService {
     }
 
     @Async
+    @Retryable
     public void sendReservationEmail(Long id, Reservation reservation) {
         Map<String, Object> model = new HashMap<>();
         model.put("userName",reservation.getUser().getUsername());
