@@ -64,4 +64,26 @@ public class ReservationService {
         }
         return null;
     }
+
+    public String decline(long id) {
+        Reservation reservation =  reservationRepo.findById(id).orElseThrow(()->
+                new RuntimeException("Reservation not found"));
+        if(reservation.getStatus().equals(Status.PENDING)){
+            reservation.setStatus(Status.CANCELED);
+            reservation.getSeat().setAvailable(true);
+            reservationRepo.save(reservation);
+            paymentRepo.delete(reservation.getPayment());
+            return "Reservation cancelled successfully";
+        }
+        else if(reservation.getStatus().equals(Status.CONFIRMED)){
+            reservation.setStatus(Status.CANCELED);
+            reservation.getSeat().setAvailable(true);
+            reservationRepo.save(reservation);
+            Payment payment = reservation.getPayment();
+            payment.setStatus(Status.RETURN);
+            paymentRepo.save(payment);
+            return "your reservation is declined successfully the money will rollback in 14 days";
+        }
+        return "Your Reservation is already canceled";
+    }
 }

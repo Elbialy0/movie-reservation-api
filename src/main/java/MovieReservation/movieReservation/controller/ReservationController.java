@@ -20,6 +20,10 @@ public class ReservationController {
         return ResponseEntity.ok().body("Reservation id : "+reservationId);
 
     }
+    @GetMapping("/decline/{id}")
+    public ResponseEntity<String> decline(@PathVariable(name = "id")long id){
+        return ResponseEntity.ok().body(reservationService.decline(id));
+    }
 
 
 
