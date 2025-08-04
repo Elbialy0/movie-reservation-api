@@ -1,12 +1,11 @@
 package MovieReservation.movieReservation.controller;
 
+import MovieReservation.movieReservation.dto.PageResponse;
+import MovieReservation.movieReservation.dto.ReservationResponse;
 import MovieReservation.movieReservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/reservation")
@@ -23,6 +22,13 @@ public class ReservationController {
     @GetMapping("/decline/{id}")
     public ResponseEntity<String> decline(@PathVariable(name = "id")long id){
         return ResponseEntity.ok().body(reservationService.decline(id));
+    }
+    @GetMapping("/reservations/{id}")
+    public ResponseEntity<PageResponse<ReservationResponse>> getReservations(@PathVariable(name = "id")long id,
+                                                                             @RequestParam(name = "page",defaultValue = "0")int page,
+                                                                             @RequestParam(name = "size",defaultValue = "10")int size){
+
+        return ResponseEntity.ok().body(reservationService.getReservations(id,page,size));
     }
 
 
