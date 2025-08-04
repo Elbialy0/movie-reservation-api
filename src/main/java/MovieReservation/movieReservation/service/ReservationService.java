@@ -113,4 +113,19 @@ public class ReservationService {
 
 
     }
+
+    public PageResponse<ReservationResponse> getValidReservations(int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);
+        Page<Reservation> reservations = reservationRepo.findAllValidReservations(pageable);
+        List<ReservationResponse> content = reservations.getContent().stream().map(mapper::mapToReservationResponse).toList();
+        return new PageResponse<>(
+                content,
+                reservations.getNumber(),
+                reservations.getNumberOfElements(),
+                reservations.getSize(),
+                reservations.getTotalPages(),
+                reservations.isFirst(),
+                reservations.isLast()
+        );
+    }
 }

@@ -5,6 +5,7 @@ import MovieReservation.movieReservation.dto.ReservationResponse;
 import MovieReservation.movieReservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,6 +30,12 @@ public class ReservationController {
                                                                              @RequestParam(name = "size",defaultValue = "10")int size){
 
         return ResponseEntity.ok().body(reservationService.getReservations(id,page,size));
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/valid")
+    public ResponseEntity<PageResponse<ReservationResponse>> getValidReservations(@RequestParam(name = "page",defaultValue = "0")int page,
+                                                                                  @RequestParam(name = "size",defaultValue = "10")int size){
+        return ResponseEntity.ok().body(reservationService.getValidReservations(page,size));
     }
 
 
