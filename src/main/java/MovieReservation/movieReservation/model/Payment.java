@@ -33,4 +33,5 @@ public class Payment {
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
     private Status status;
+    private String  paypalId;
 }

@@ -3,7 +3,10 @@ package MovieReservation.movieReservation.service;
 
 import MovieReservation.movieReservation.dto.PaymentRequest;
 import MovieReservation.movieReservation.dto.PaymentResponse;
+import MovieReservation.movieReservation.model.Reservation;
+import MovieReservation.movieReservation.model.Status;
 import MovieReservation.movieReservation.repository.PaymentRepo;
+import MovieReservation.movieReservation.repository.ReservationRepo;
 import com.paypal.api.payments.*;
 import com.paypal.base.rest.APIContext;
 
@@ -21,6 +24,7 @@ import java.util.Locale;
 public class PaymentService {
     private final APIContext apiContext;
     private final PaymentRepo paymentRepo;
+    private final ReservationRepo reservationRepo;
 
     public Payment createPayment(
             Double total,
@@ -90,5 +94,27 @@ public class PaymentService {
            throw new RuntimeException("Invalid process");
        }
        return new PaymentResponse(approvalLink);
+    }
+
+    public String successfulPayment(String paymentId, String payerId) throws PayPalRESTException {
+        Payment payment = executePayment(paymentId,payerId);
+        String state = payment.getState();
+        MovieReservation.movieReservation.model.Payment reservationPayment = paymentRepo.findBypaypalId(paymentId);
+        if(state.equals("approved")){
+            // TODO send invoice mail
+            reservationPayment.setStatus(Status.CONFIRMED);
+            Reservation reservation = reservationPayment.getReservation();
+            reservation.setStatus(Status.CONFIRMED);
+            paymentRepo.save(reservationPayment);
+            reservationRepo.save(reservation);
+            return "Payment completed successfully";
+        }else {
+            reservationPayment.setStatus(Status.FAILED);
+            Reservation reservation = reservationPayment.getReservation();
+            reservation.setStatus(Status.FAILED);
+            paymentRepo.save(reservationPayment);
+            reservationRepo.save(reservation);
+            return payment.getFailureReason();
+        }
     }
 }

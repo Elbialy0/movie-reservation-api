@@ -7,9 +7,7 @@ import com.paypal.base.rest.PayPalRESTException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/payment")
@@ -19,5 +17,15 @@ public class PaymentController {
     @PostMapping("/pay")
     public ResponseEntity<PaymentResponse> pay(@Valid PaymentRequest paymentRequest) throws PayPalRESTException {
       return   ResponseEntity.ok().body(paymentService.pay(paymentRequest));
+    }
+    @GetMapping("/success")
+    public ResponseEntity<String> successfulPayment(@RequestParam String paymentId,
+                                                    @RequestParam String payerId) throws PayPalRESTException {
+        return ResponseEntity.ok().body(paymentService.successfulPayment(paymentId,payerId));
+    }
+    @GetMapping("/cancel")
+    public ResponseEntity<String> cancel(){
+        return ResponseEntity.ok("Payment canceled by user.");
+
     }
 }

@@ -4,5 +4,6 @@ public enum Status {
     PENDING,
     CANCELED,
     CONFIRMED,
-    RETURN
+    RETURN,
+    FAILED
 }
