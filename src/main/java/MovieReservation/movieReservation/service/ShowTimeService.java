@@ -11,6 +11,7 @@ import MovieReservation.movieReservation.repository.PaymentRepo;
 import MovieReservation.movieReservation.repository.ShowTimeRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -70,6 +71,7 @@ public class ShowTimeService {
         log.info("Show time deleted successfully");
     }
 
+    @Cacheable(value = "genre", key = "#page + '-' + #size + '-' + #genre")
     public PageResponse<ShowTimeResponse> getByType(String genre, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ShowTime> showTimes = showTimeRepo.findAllByGenre(pageable,genre);
@@ -85,6 +87,7 @@ public class ShowTimeService {
         );
     }
 
+    @Cacheable(value = "showTimes", key = "#page + '-' + #size")
     public PageResponse<ShowTimeResponse> getAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ShowTime> showTimes = showTimeRepo.findAll(pageable);
@@ -99,7 +102,7 @@ public class ShowTimeService {
                 showTimes.isLast()
         );
     }
-
+    @Cacheable(value = "showTimesMovieTitle", key = "#page + '-' + #size + '-' +#movieTitle")
     public PageResponse<ShowTimeResponse> getByMovieTitle(String movieTitle, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ShowTime> showTimes = showTimeRepo.findByMovieTitle(pageable, movieTitle);
@@ -116,6 +119,7 @@ public class ShowTimeService {
 
     }
 
+    @Cacheable(value = "showTime", key = "#id")
     public ShowTimeResponse getShowTime(long id) {
         ShowTime showTime = showTimeRepo.findById(id).orElseThrow(()->new RuntimeException("Show time not found"));
         return mapper.mapToShowTimeResponse(showTime);

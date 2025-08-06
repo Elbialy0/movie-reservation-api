@@ -36,14 +36,15 @@ public class SecurityConfigurations {
                         auth.requestMatchers("/auth/logout").authenticated().
                         requestMatchers(
                                 "/auth/**",
-                                "/error","/oauth2/authorization/google"
+                                "/error","/oauth2/authorization/google",
+                                "/showTime/filter",
+                                "/showTime/findMovie",
+                                "/showTime/all"
 
                         ).permitAll().anyRequest().authenticated())
 
                 .authenticationProvider(authenticationProvider)
                 .oauth2Login(auth->auth.successHandler(successHandler))
-                // todo handle authentication exceptions
-//                .exceptionHandling(eh->eh.authenticationEntryPoint(oauth2AuthenticationEntryPoint))
                 .exceptionHandling(eh->eh.authenticationEntryPoint(customAuthenticationEntryPoint))
 
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

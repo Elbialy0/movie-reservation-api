@@ -12,6 +12,7 @@ import MovieReservation.movieReservation.repository.ShowTimeRepo;
 import MovieReservation.movieReservation.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -96,6 +97,7 @@ public class ReservationService {
         return "Your Reservation is already canceled";
     }
 
+    @Cacheable(value = "reservations", key = "#page + '-' + #size")
     public PageResponse<ReservationResponse> getReservations(long id,int page, int size) {
         User user = userRepo.findById(id).orElseThrow(()->new RuntimeException("User not found"));
         Pageable pageable = PageRequest.of(page,size);
@@ -113,10 +115,10 @@ public class ReservationService {
 
 
     }
-
+    @Cacheable(value = "validReservations", key = "#page + '-' + #size")
     public PageResponse<ReservationResponse> getValidReservations(int page, int size) {
         Pageable pageable = PageRequest.of(page,size);
-        Page<Reservation> reservations = reservationRepo.findAllValidReservations(pageable);
+        Page<Reservation> reservations = reservationRepo.findReservationsBasedOnStatus(pageable,Status.CONFIRMED);
         List<ReservationResponse> content = reservations.getContent().stream().map(mapper::mapToReservationResponse).toList();
         return new PageResponse<>(
                 content,

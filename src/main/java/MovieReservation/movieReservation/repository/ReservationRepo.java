@@ -1,6 +1,7 @@
 package MovieReservation.movieReservation.repository;
 
 import MovieReservation.movieReservation.model.Reservation;
+import MovieReservation.movieReservation.model.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,6 +15,6 @@ select r from Reservation r where r.user.id = :id""")
     Page<Reservation> findAllByUser(Pageable pageable, long id);
 
     @Query("""
-select r from Reservation r where r.status = 'CONFIRMED'""")
-    Page<Reservation> findAllValidReservations(Pageable pageable);
+SELECT r FROM Reservation r WHERE r.status = :status""")
+    Page<Reservation> findReservationsBasedOnStatus(Pageable pageable, Status status);
 }

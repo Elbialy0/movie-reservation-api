@@ -12,6 +12,7 @@ import MovieReservation.movieReservation.repository.GenreRepo;
 import MovieReservation.movieReservation.repository.MovieRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -92,10 +93,12 @@ public class MovieService {
         return savedFile.getAbsolutePath();
     }
 
+    @Cacheable(value = "movie", key = "#movieId")
     public MovieResponse getMovie(Long movieId) {
         Movie movie = movieRepo.findById(movieId).orElseThrow(()->new MovieException("Movie not found"));
         return mapper.mapToMovieResponse(movie);
     }
+
 
     public UrlResource getCover(int id) throws MalformedURLException {
         Movie movie = movieRepo.findById((long) id).orElseThrow(()->new MovieException("Movie not found"));
@@ -114,6 +117,7 @@ public class MovieService {
 
     }
 
+    @Cacheable(value = "movies", key = "#page + '-' + #size")
     public PageResponse<MovieResponse> getAllmovies(int page, int size) {
         Pageable pageable = PageRequest.of(page, size,Sort.by("title").ascending());
         Page<Movie> movies = movieRepo.findAll(pageable);
@@ -134,6 +138,7 @@ public class MovieService {
 
     }
 
+    @Cacheable(value = "moviesByGenre", key = "#page + '-' + #size")
     public PageResponse<MovieResponse> getByGenre(String filter,int page, int size) {
         Genre genre = genreRepo.findByName(filter);
         Pageable pageable = PageRequest.of(page, size, Sort.by("title").ascending());
@@ -164,6 +169,7 @@ public class MovieService {
 
     }
 
+    @Cacheable(value = "availableMovies", key = "#page + '-' + #size")
     public PageResponse<MovieResponse> getAvailableMovies(int page, int size) {
         Pageable pageable = PageRequest.of(page,size,Sort.by("title").ascending());
         Page<Movie> movies = movieRepo.findAvailableMovies(pageable);

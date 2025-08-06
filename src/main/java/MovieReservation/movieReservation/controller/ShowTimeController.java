@@ -7,12 +7,14 @@ import MovieReservation.movieReservation.model.ShowTime;
 import MovieReservation.movieReservation.service.ShowTimeService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@EnableCaching
 @RequestMapping("/showTime")
 public class ShowTimeController {
     private final ShowTimeService showTimeService;
