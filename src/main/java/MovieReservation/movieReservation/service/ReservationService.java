@@ -13,6 +13,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -46,7 +47,7 @@ public class ReservationService {
         seat.setAvailable(false);
         Reservation reservation = new Reservation();
         reservation.setSeat(seat);
-        User user = authService.getAuthentication().orElseThrow(()->new RuntimeException("Please login again"));
+        User user = authService.getAuthentication().orElseThrow(()->new BadCredentialsException("Please login again"));
         reservation.setUser(user);
         reservation.setShowTime(showTime);
         reservation.setStatus(Status.PENDING);

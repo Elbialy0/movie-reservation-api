@@ -13,6 +13,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.IOException;
+
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class GlobalHandler {
@@ -74,5 +76,30 @@ public class GlobalHandler {
                         .timestamp(java.time.ZonedDateTime.now().toString())
                         .build()
         );
+    }
+    @ExceptionHandler(SecurityException.class)
+    public ResponseEntity<ExceptionResponse> handleSecurityException(SecurityException ex,
+                                                                     HttpServletRequest request){
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                ExceptionResponse.builder().statusCode(HttpStatus.FORBIDDEN.value())
+                        .timestamp(java.time.ZonedDateTime.now().toString())
+                        .message(ex.getMessage())
+                        .error(HttpStatus.FORBIDDEN.getReasonPhrase())
+                        .path(request.getRequestURI())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<ExceptionResponse> handleIOException(IOException ex, HttpServletRequest request){
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(
+                ExceptionResponse.builder().statusCode(HttpStatus.BAD_GATEWAY.value())
+                        .timestamp(java.time.ZonedDateTime.now().toString())
+                        .message(ex.getMessage())
+                        .error(HttpStatus.BAD_GATEWAY.getReasonPhrase())
+                        .path(request.getRequestURI())
+                        .build()
+        );
+
     }
 }

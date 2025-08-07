@@ -3,6 +3,7 @@ package MovieReservation.movieReservation.service;
 
 import MovieReservation.movieReservation.dto.PaymentRequest;
 import MovieReservation.movieReservation.dto.PaymentResponse;
+import MovieReservation.movieReservation.exceptions.PaymentException;
 import MovieReservation.movieReservation.model.Reservation;
 import MovieReservation.movieReservation.model.Status;
 import MovieReservation.movieReservation.repository.PaymentRepo;
@@ -92,11 +93,10 @@ public class PaymentService {
                 .filter(link -> link.getRel().equals("approval_url"))
                 .findFirst()
                 .map(Links::getHref) // <- this gives you the actual URL
-                .orElseThrow(() -> new RuntimeException("Approval URL not found"));
+                .orElseThrow(() -> new PaymentException("Approval URL not found"));
 
         if (approvalLink==null){
-           //TODO handle this exception
-           throw new RuntimeException("Invalid process");
+           throw new PaymentException("Paypal refuse the process");
        }
        return new PaymentResponse(approvalLink);
     }
