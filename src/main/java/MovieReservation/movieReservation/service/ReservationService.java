@@ -6,10 +6,7 @@ import MovieReservation.movieReservation.exceptions.HallFullCapacityException;
 import MovieReservation.movieReservation.exceptions.ShowTimeOutException;
 import MovieReservation.movieReservation.mapper.Mapper;
 import MovieReservation.movieReservation.model.*;
-import MovieReservation.movieReservation.repository.PaymentRepo;
-import MovieReservation.movieReservation.repository.ReservationRepo;
-import MovieReservation.movieReservation.repository.ShowTimeRepo;
-import MovieReservation.movieReservation.repository.UserRepo;
+import MovieReservation.movieReservation.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -32,6 +29,7 @@ public class ReservationService {
     private final EmailService emailService;
     private final UserRepo userRepo;
     private final Mapper mapper;
+    private final SeatRepo seatRepo;
 
 
     public long reserve(long id) {
@@ -45,9 +43,7 @@ public class ReservationService {
             throw new ShowTimeOutException("The show is ended");
         }
         Seat seat = getAvailableSeat(showTime.getHall());
-        if(seat!=null){
-            seat.setAvailable(false);
-        }
+        seat.setAvailable(false);
         Reservation reservation = new Reservation();
         reservation.setSeat(seat);
         User user = authService.getAuthentication().orElseThrow(()->new RuntimeException("Please login again"));
@@ -55,16 +51,19 @@ public class ReservationService {
         reservation.setShowTime(showTime);
         reservation.setStatus(Status.PENDING);
        Payment payment = new Payment();
-       payment.setReservation(reservation);
        payment.setAmount(showTime.getPrice());
        payment.setStatus(Status.PENDING);
        payment.setExpirationDate(LocalDateTime.now().minusHours(2));
-       paymentRepo.save(payment);
-       reservation.setPayment(payment);
        emailService.sendReservationEmail(payment.getId(),reservation);
+       long reservationId =  reservationRepo.save(reservation).getId();
+        seatRepo.save(seat);
+        reservation.setPayment(payment);
+        payment.setReservation(reservation);
+        paymentRepo.save(payment);
+        reservationRepo.save(reservation);
 
 
-        return reservationRepo.save(reservation).getId();
+        return reservationId;
     }
 
     private Seat getAvailableSeat(Hall hall) {
@@ -72,7 +71,7 @@ public class ReservationService {
         for (Seat seat : seats){
             if (seat.isAvailable()) return seat;
         }
-        return null;
+      throw new RuntimeException("No Seats");
     }
 
     public String decline(long id) {

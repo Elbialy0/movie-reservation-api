@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class ReservationController {
     private final ReservationService reservationService;
 
-    @GetMapping("/reserve/{id}")
+    @PostMapping("/reserve/{id}")
     public ResponseEntity<String > reserve(@PathVariable(name = "id")long id){
         long reservationId = reservationService.reserve(id);
         return ResponseEntity.ok().body("Reservation id : "+reservationId);

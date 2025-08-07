@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 @RequiredArgsConstructor
 public class PaypalConfiguration {
-    private String clientId = "AZTLzSsoc233Mq0u785Rh0HYmZ3tWRNNV8yLNjc6dyKngPDtSxPQQkHvS7LZ11w8lj-SH4YygdxdFAPK";
-    private String clientSecret = "EE_z756c7UuFiZujuN2KDVxT54-zo74iKdbzhVxw29KsPqsTsxIlA8c04MNW_gJOL8OWMxKiCvtKN9TqEE_z756c7UuFiZujuN2KDVxT54-zo74iKdbzhVxw29KsPqsTsxIlA8c04MNW_gJOL8OWMxKiCvtKN9Tq";
+    private String clientId = "AZ0oqCMU_6fcJUP9HoHbZNTHiY0bKf7luhMxKmxsqyY0V8E8iOSd3HVY4ezpBlQGWhKueX_AwBZfLBJg";
+    private String clientSecret = "EF2SB2k5VxnaMPZy1XZSSn-txOjho524t7MWaSh5_ydtyS-PzkoeYnAhlw8af5SvzTLrG0IoCtxkJ-RT";
     private String mode = "sandbox";
 
     @Bean

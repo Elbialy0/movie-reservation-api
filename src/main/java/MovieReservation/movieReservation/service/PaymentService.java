@@ -13,6 +13,7 @@ import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentService {
     private final APIContext apiContext;
     private final PaymentRepo paymentRepo;
@@ -75,21 +77,24 @@ public class PaymentService {
     }
 
     public PaymentResponse pay(@Valid PaymentRequest paymentRequest) throws PayPalRESTException {
-        double total = paymentRepo.findById(paymentRequest.getPaymentId()).get().getAmount();
+
         Payment payment = createPayment(
-                total,
+                105.0,
                 paymentRequest.getCurrency(),
-                paymentRequest.getCurrency(),
+                paymentRequest.getMethod(),
                 paymentRequest.getIntent(),
-                paymentRequest.getDescription(),
+                paymentRequest.getDescription().concat("..").concat(paymentRequest.getPaymentId().toString()),
                 "http://localhost:8080/api/v1/payment/cancel",
                 "http://localhost:8080/api/v1/payment/sucess"
 
         );
-       String approvalLink = String.valueOf(payment.getLinks().stream()
-               .filter(link-> link.getRel().equals("approval_url"))
-               .findAny().map(Links::getRel));
-       if (approvalLink==null){
+        String approvalLink = payment.getLinks().stream()
+                .filter(link -> link.getRel().equals("approval_url"))
+                .findFirst()
+                .map(Links::getHref) // <- this gives you the actual URL
+                .orElseThrow(() -> new RuntimeException("Approval URL not found"));
+
+        if (approvalLink==null){
            //TODO handle this exception
            throw new RuntimeException("Invalid process");
        }
@@ -99,7 +104,11 @@ public class PaymentService {
     public String successfulPayment(String paymentId, String payerId) throws PayPalRESTException {
         Payment payment = executePayment(paymentId,payerId);
         String state = payment.getState();
-        MovieReservation.movieReservation.model.Payment reservationPayment = paymentRepo.findBypaypalId(paymentId);
+        String description = payment.getTransactions().get(0).getDescription(); // e.g. "Reservation for ticket..123"
+        String[] parts = description.split("\\.\\.");
+        Long reservationId = Long.parseLong(parts[1]); // This is "123" from "..123"
+
+        MovieReservation.movieReservation.model.Payment reservationPayment = paymentRepo.findById(reservationId).orElseThrow();
         if(state.equals("approved")){
             // TODO send invoice mail
             reservationPayment.setStatus(Status.CONFIRMED);

@@ -39,7 +39,8 @@ public class SecurityConfigurations {
                                 "/error","/oauth2/authorization/google",
                                 "/showTime/filter",
                                 "/showTime/findMovie",
-                                "/showTime/all"
+                                "/showTime/all",
+                                "payment/sucess"
 
                         ).permitAll().anyRequest().authenticated())
 

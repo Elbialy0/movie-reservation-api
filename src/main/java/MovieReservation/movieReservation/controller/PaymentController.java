@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
     private final PaymentService paymentService;
     @PostMapping("/pay")
-    public ResponseEntity<PaymentResponse> pay(@Valid PaymentRequest paymentRequest) throws PayPalRESTException {
+    public ResponseEntity<PaymentResponse> pay(@Valid @RequestBody PaymentRequest paymentRequest) throws PayPalRESTException {
       return   ResponseEntity.ok().body(paymentService.pay(paymentRequest));
     }
-    @GetMapping("/success")
-    public ResponseEntity<String> successfulPayment(@RequestParam String paymentId,
-                                                    @RequestParam String payerId) throws PayPalRESTException {
+    @GetMapping("/sucess")
+    public ResponseEntity<String> successfulPayment(@RequestParam("paymentId") String paymentId,
+                                                    @RequestParam("PayerID") String payerId) throws PayPalRESTException {
         return ResponseEntity.ok().body(paymentService.successfulPayment(paymentId,payerId));
     }
     @GetMapping("/cancel")
