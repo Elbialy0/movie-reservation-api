@@ -59,11 +59,15 @@ Prerequisites:
 - Docker Desktop (with Docker Compose)
 Quick start (Windows PowerShell):
 1) Clone the repository
-    - git clone https://github.com/your-org/movie-reservation-api.git
-    - cd "movie-reservation-api"
+```powershell
+git clone https://github.com/your-org/movie-reservation-api.git
+cd "movie-reservation-api"
+```
 
 2) Start infrastructure services (PostgreSQL, Redis, MailDev)
-    - docker compose up -d
+```powershell
+docker compose up -d
+```
     - Services and ports:
         - PostgreSQL: localhost:5432 (DB=movie_reservation, user=postgres, password=password)
         - Redis: localhost:6379
@@ -73,7 +77,9 @@ Quick start (Windows PowerShell):
     - Uses Spring profile: dev (configured in src\main\resources\application.properties)
     - Context path: /api/v1 (so URLs start with http://localhost:8080/api/v1)
     - Start with Maven Wrapper:
-        - .\mvnw.cmd spring-boot:run
+```powershell
+.\mvnw.cmd spring-boot:run
+```
 
 4) Verify it’s running
     - Open: http://localhost:8080/api/v1/showTime/all (public endpoint)
@@ -85,5 +91,10 @@ Configuration notes:
 - If you change DB credentials or ports, update application-dev.properties accordingly.
 
 Common commands:
-- Stop services: docker compose down
-- Rebuild and run once: .\mvnw.cmd clean spring-boot:run
+```powershell
+# Stop services
+docker compose down
+
+# Rebuild and run once
+.\mvnw.cmd clean spring-boot:run
+``` 
