@@ -1,6 +1,7 @@
 package MovieReservation.movieReservation.security;
 
 import MovieReservation.movieReservation.exceptions.CustomAuthenticationEntryPoint;
+import MovieReservation.movieReservation.filters.CsrfCookieFilter;
 import MovieReservation.movieReservation.filters.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 @RequiredArgsConstructor
 @Configuration
@@ -26,9 +31,15 @@ public class SecurityConfigurations {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final JwtFilter jwtFilter;
 
+
     @Bean
     public DefaultSecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+        CsrfTokenRequestAttributeHandler csrfHandler = new CsrfTokenRequestAttributeHandler();
+
+        http.csrf(csrfConfig->csrfConfig.csrfTokenRequestHandler(csrfHandler)
+                        .ignoringRequestMatchers("/auth/register")
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .cors(AbstractHttpConfigurer::disable)
                 .sessionManagement(session->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
