@@ -47,6 +47,34 @@ A straightforward and efficient RESTful backend built with Spring Boot for manag
   - Spring Boot DevTools
   - Lombok
 
+## Project Structure
+```text
+movie-reservation-api/
+ ├─ src/
+  ├─ main/
+  │  ├─ java/MovieReservation/movieReservation/
+  │  │  ├─ config/
+  │  │  ├─ controller/
+  │  │  ├─ dto/
+  │  │  ├─ exceptions/
+  │  │  ├─ filters/
+  │  │  ├─ handler/
+  │  │  ├─ mapper/
+  │  │  ├─ model/
+  │  │  ├─ repository/
+  │  │  └─ security/
+  │  └─ resources/
+  │     ├─ application.properties
+  │     ├─ application-dev.properties
+  │     ├─ static/
+  │     └─ templates/
+  │        ├─ activate_account.html
+  │        └─ reset_password.html
+  └─ test/
+     └─ java/MovieReservation/movieReservation/
+
+```
+
 ## Database Design
 <p align="center">
   <img src="docs/drawSQL-image-export-2025-04-27.png" alt="Database Design" width="600"/>
