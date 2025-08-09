@@ -1,3 +1,8 @@
 # Movie Reservation API
 
- A Spring Boot-based backend for managing movie reservations, showtimes, and user authentication. The project uses PostgreSQL, Redis, and MailDev for local development and testing.
+## Description
+A straightforward and efficient RESTful backend built with Spring Boot for managing cinema operations:
+- Manage movies and their showtimes
+- Reserve seats and process reservations
+- Handle user accounts with registration, login, email-based activation, and password reset features  
+
