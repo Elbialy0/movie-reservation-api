@@ -63,6 +63,7 @@ movie-reservation-api/
   │  │  ├─ model/
   │  │  ├─ repository/
   │  │  └─ security/
+  |  |  └─  service/
   │  └─ resources/
   │     ├─ application.properties
   │     ├─ application-dev.properties
