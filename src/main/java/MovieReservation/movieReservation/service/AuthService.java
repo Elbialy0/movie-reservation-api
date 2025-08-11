@@ -54,10 +54,14 @@ public class AuthService {
                 .build();
         userRepo.save(user);
         String  token = tokenService.createToken(request.getUsername());
-        emailService.sendEmailForActivation(token,request.getUsername(),"Movie Reservation Account Activation",
-                "activate_account.html",String.format("http://localhost:8080/api/v1/auth/activation/%s", token)
+        try {
+            emailService.sendEmailForActivation(token, request.getUsername(), "Movie Reservation Account Activation",
+                    "activate_account.html", String.format("http://localhost:8080/api/v1/auth/activation/%s", token)
 
-        );
+            );
+        }catch (Exception ex){
+            log.error("Can't send mail i will try again");
+        }
         log.info(String.format("http://localhost:8080/api/v1/auth/activation/%s", token));
 
     }
