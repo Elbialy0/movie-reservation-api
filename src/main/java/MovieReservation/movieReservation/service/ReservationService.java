@@ -97,7 +97,7 @@ public class ReservationService {
         return "Your Reservation is already canceled";
     }
 
-    @Cacheable(value = "reservations", key = "#page + '-' + #size")
+
     public PageResponse<ReservationResponse> getReservations(long id,int page, int size) {
         User user = userRepo.findById(id).orElseThrow(()->new RuntimeException("User not found"));
         Pageable pageable = PageRequest.of(page,size);
@@ -115,7 +115,7 @@ public class ReservationService {
 
 
     }
-    @Cacheable(value = "validReservations", key = "#page + '-' + #size")
+
     public PageResponse<ReservationResponse> getValidReservations(int page, int size) {
         Pageable pageable = PageRequest.of(page,size);
         Page<Reservation> reservations = reservationRepo.findReservationsBasedOnStatus(pageable,Status.CONFIRMED);

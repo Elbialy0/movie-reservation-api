@@ -11,7 +11,10 @@ import MovieReservation.movieReservation.repository.PaymentRepo;
 import MovieReservation.movieReservation.repository.ShowTimeRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +36,10 @@ public class ShowTimeService {
     private final PaymentRepo paymentRepo;
     private final Mapper mapper;
 
+    @Caching(evict = {
+            @CacheEvict(value = "genre", allEntries = true),
+            @CacheEvict(value = "showTimes", allEntries = true)
+    })
     public long createNewShowTime(ShowTimeRequest request) {
       ShowTime showTime = showTimeRepo.save(ShowTime.builder().time(request.getTime()).reservations(new ArrayList<>()).price(request.getPrice()
         ).movie(movieRepo.findById((long) request.getMovieId()).orElseThrow(()
@@ -46,7 +53,16 @@ public class ShowTimeService {
 
     }
 
-    public void updateShow(ShowTimeRequest request,long id) {
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "genre", allEntries = true),
+                    @CacheEvict(value = "showTimes", allEntries = true)
+            },
+            put = {
+                    @CachePut(value = "showTime", key = "#id")
+            }
+    )
+    public ShowTimeResponse updateShow(ShowTimeRequest request,long id) {
         ShowTime showTime = showTimeRepo.findById(id).orElseThrow(
                 ()-> new RuntimeException("Show time not found")
         );
@@ -60,9 +76,15 @@ public class ShowTimeService {
         showTime.setPrice(request.getPrice());
         showTimeRepo.save(showTime);
         log.info("Show time updated successfully");
+        return mapper.mapToShowTimeResponse(showTime);
 
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "genre", allEntries = true),
+            @CacheEvict(value = "showTimes", allEntries = true),
+            @CacheEvict(value = "showTime", key = "#id")
+    })
     public void deleteShow(long id) {
         ShowTime showTime = showTimeRepo.findById(id).orElseThrow(
                 ()-> new RuntimeException("Show time not found")
@@ -102,7 +124,7 @@ public class ShowTimeService {
                 showTimes.isLast()
         );
     }
-    @Cacheable(value = "showTimesMovieTitle", key = "#page + '-' + #size + '-' +#movieTitle")
+
     public PageResponse<ShowTimeResponse> getByMovieTitle(String movieTitle, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ShowTime> showTimes = showTimeRepo.findByMovieTitle(pageable, movieTitle);

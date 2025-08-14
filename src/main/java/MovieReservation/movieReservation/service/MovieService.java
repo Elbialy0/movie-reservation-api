@@ -63,8 +63,8 @@ public class MovieService {
             throw new MovieException("Movie already exists");
         }
 
-
         }
+
         @PreAuthorize("hasRole('ROLE_ADMIN')")
         @Caching(evict = {
                 @CacheEvict(value = "moviesByGenre", allEntries = true),
