@@ -1,13 +1,10 @@
-package MovieReservation.movieReservation.Service;
+package MovieReservation.movieReservation.service;
 import MovieReservation.movieReservation.dto.SignupRequest;
 import MovieReservation.movieReservation.exceptions.SignupException;
 import MovieReservation.movieReservation.model.Role;
 import MovieReservation.movieReservation.model.User;
 import MovieReservation.movieReservation.repository.RoleRepo;
 import MovieReservation.movieReservation.repository.UserRepo;
-import MovieReservation.movieReservation.service.AuthService;
-import MovieReservation.movieReservation.service.EmailService;
-import MovieReservation.movieReservation.service.TokenService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.*;
@@ -17,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
 
