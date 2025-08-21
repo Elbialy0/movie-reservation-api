@@ -62,7 +62,7 @@ public class AuthService {
         }catch (Exception ex){
             log.error("Can't send mail i will try again");
         }
-        log.info(String.format("http://localhost:8080/api/v1/auth/activation/%s", token));
+        log.info("http://localhost:8080/api/v1/auth/activation/{}", token);
 
     }
 
@@ -80,7 +80,7 @@ public class AuthService {
     }
 
     public void   forgetPassword(String email) {
-        if(!userRepo.findByUsername(email).isPresent()){
+        if(userRepo.findByUsername(email).isEmpty()){
             throw new UsernameNotFoundException("Username not found");
         }
         User user = userRepo.getByUsername(email);
@@ -91,10 +91,10 @@ public class AuthService {
     }
 
     public void resetPassword( ResetPasswordRequest request) {
-        Token dbToken = tokenService.verify(request.getToken()); // verify the token
-        User user = dbToken.getUser(); // get the user associated with the token
-        user.setPassword(passwordEncoder.encode(request.getPassword())); // update the password
-        userRepo.save(user); // save the user with the new password
+        Token dbToken = tokenService.verify(request.getToken());
+        User user = dbToken.getUser();
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        userRepo.save(user);
     }
 
 
@@ -103,23 +103,23 @@ public class AuthService {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername()
                 ,request.getPassword())
-        ); // validate the user using the authentication manager by the default provided in spring security
-        User user = (User) authentication.getPrincipal(); // get the user from the authentication object
-        String jwt = jwtService.generateJwtToken(user); // generate the jwt token for the user
-        String refreshToken = java.util.UUID.randomUUID().toString(); // generate a random refresh token for the user
-        tokenRepo.save(Token.builder().token(refreshToken).user(user).expirationDate(java.time.LocalDateTime.now().plusDays(7)).build()); // save the refresh token in the database with a 7 day expiration date
-
-        return LoginResponse.builder().jwtToken(jwt).refreshToken(refreshToken).build(); // return the jwt token and refresh token in the response object
+        );
+        User user = (User) authentication.getPrincipal();
+        String jwt = jwtService.generateJwtToken(user);
+        String refreshToken = java.util.UUID.randomUUID().toString();
+        tokenRepo.save(Token.builder().token(refreshToken).user(user).
+                expirationDate(java.time.LocalDateTime.now().plusDays(7)).build());
+        return LoginResponse.builder().jwtToken(jwt).refreshToken(refreshToken).build();
 
     }
 
     public void logout(String jwt,String token) {
 
-        Token refreshToken = tokenService.verify(token);// find the refresh token in the database
-        tokenRepo.delete(refreshToken);// delete the refresh token from the database if it exists
-        jwtBlackListService.blacklistToken(jwt,864000); // blacklist the jwt token for 24 hours from now using the jwt blacklist service
-        SecurityContextHolder.getContext().setAuthentication(null);// clear the authentication context if the user is logged out successfully
-        log.info("User logged out successfully"); // log the user logout successfully in the console
+        Token refreshToken = tokenService.verify(token);
+        tokenRepo.delete(refreshToken);
+        jwtBlackListService.blacklistToken(jwt,864000);
+        SecurityContextHolder.getContext().setAuthentication(null);
+        log.info("User logged out successfully");
     }
 
     public LoginResponse refresh(String refreshToken) {

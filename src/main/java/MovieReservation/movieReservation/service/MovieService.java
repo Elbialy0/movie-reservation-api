@@ -45,7 +45,7 @@ public class MovieService {
     private final GenreRepo genreRepo;
     private final Mapper mapper;
     private static final String UPLOAD_DIR = "D:\\upload_dir";
-    // here add the movie and make it not available because there are more details must be in the movie
+
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Caching(evict = {
             @CacheEvict(value = "moviesByGenre", allEntries = true),
@@ -143,7 +143,7 @@ public class MovieService {
     }
 
     @Cacheable(value = "movies", key = "#page + '-' + #size")
-    public PageResponse<MovieResponse> getAllmovies(int page, int size) {
+    public PageResponse<MovieResponse> getAllMovies(int page, int size) {
         Pageable pageable = PageRequest.of(page, size,Sort.by("title").ascending());
         Page<Movie> movies = movieRepo.findAll(pageable);
         List<Movie> moviesList = movies.getContent();
@@ -158,9 +158,6 @@ public class MovieService {
                 movies.isLast()
 
         );
-
-
-
     }
 
     @Cacheable(value = "moviesByGenre", key = " #filter + '-' +#page + '-' + #size")

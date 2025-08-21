@@ -9,7 +9,6 @@ import MovieReservation.movieReservation.model.*;
 import MovieReservation.movieReservation.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +32,7 @@ public class ReservationService {
     private final SeatRepo seatRepo;
 
 
-    public long reserve(long id) {
+    public synchronized long  reserve(long id) {
         ShowTime showTime = showTimeRepo.findById(id).orElseThrow(()->
                 new RuntimeException("Show time not found"));
         int reservations = showTime.getReservations().size();
@@ -112,8 +111,6 @@ public class ReservationService {
                 reservations.isFirst(),
                 reservations.isLast()
         );
-
-
     }
 
     public PageResponse<ReservationResponse> getValidReservations(int page, int size) {

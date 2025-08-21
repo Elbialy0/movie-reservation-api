@@ -104,9 +104,9 @@ public class PaymentService {
     public String successfulPayment(String paymentId, String payerId) throws PayPalRESTException {
         Payment payment = executePayment(paymentId,payerId);
         String state = payment.getState();
-        String description = payment.getTransactions().get(0).getDescription(); // e.g. "Reservation for ticket..123"
+        String description = payment.getTransactions().getFirst().getDescription();
         String[] parts = description.split("\\.\\.");
-        Long reservationId = Long.parseLong(parts[1]); // This is "123" from "..123"
+        Long reservationId = Long.parseLong(parts[1]);
 
         MovieReservation.movieReservation.model.Payment reservationPayment = paymentRepo.findById(reservationId).orElseThrow();
         if(state.equals("approved")){

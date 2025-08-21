@@ -29,7 +29,8 @@ public class TokenService {
         }
 
         User user = userRepo.getByUsername(username);
-        tokenRepo.save(Token.builder().token(token).user(user).expirationDate(LocalDateTime.now().plusMinutes(5)) .build());
+        tokenRepo.save(Token.builder().token(token).user(user)
+                .expirationDate(LocalDateTime.now().plusMinutes(5)) .build());
         return token;
     }
 
@@ -58,7 +59,8 @@ public class TokenService {
 
     public String createForgetToken(User user) {
         String token = java.util.UUID.randomUUID().toString();
-        tokenRepo.save(Token.builder().token(token).user(user).expirationDate(LocalDateTime.now().plusMinutes(15)).build());
+        tokenRepo.save(Token.builder().token(token).user(user).
+                expirationDate(LocalDateTime.now().plusMinutes(15)).build());
         return token;
     }
 }
