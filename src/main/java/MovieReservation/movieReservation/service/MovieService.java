@@ -13,9 +13,7 @@ import MovieReservation.movieReservation.repository.MovieRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -47,10 +45,6 @@ public class MovieService {
     private static final String UPLOAD_DIR = "D:\\upload_dir";
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @Caching(evict = {
-            @CacheEvict(value = "moviesByGenre", allEntries = true),
-            @CacheEvict(value = "availableMovies", allEntries = true)
-    })
     public void addMovie( AddMovieRequest request) {
         User user = authService.getAuthentication().orElseThrow(()->new BadCredentialsException("Forbidden"));
         Genre genre = genreRepo.findByName(request.getGenre());
@@ -66,13 +60,7 @@ public class MovieService {
         }
 
         @PreAuthorize("hasRole('ROLE_ADMIN')")
-        @Caching(evict = {
-                @CacheEvict(value = "moviesByGenre", allEntries = true),
-                @CacheEvict(value = "availableMovies", allEntries = true)
-        }, put = {
-                @CachePut(value = "movie", key = "#movieId")
-        })
-    public MovieResponse addPoster(Long movieId, MultipartFile poster) throws IOException {
+    public void addPoster(Long movieId, MultipartFile poster) throws IOException {
         User user = authService.getAuthentication().orElseThrow(()->new BadCredentialsException("Forbidden"));
 
         Movie movie = movieRepo.findById(movieId)
@@ -80,23 +68,17 @@ public class MovieService {
 
             movie.setPoster(saveFile(poster));
             movieRepo.save(movie);
-            return mapper.mapToMovieResponse(movie);
-    }
+            mapper.mapToMovieResponse(movie);
+        }
 
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @Caching(evict = {
-            @CacheEvict(value = "moviesByGenre", allEntries = true),
-            @CacheEvict(value = "availableMovies", allEntries = true)
-    }, put = {
-            @CachePut(value = "movie", key = "#movieId")
-    })
-    public MovieResponse addTailer(Long movieId, MultipartFile tailer) throws IOException {
+    public void addTailer(Long movieId, MultipartFile tailer) throws IOException {
         User user = authService.getAuthentication().orElseThrow(()->new BadCredentialsException("Forbidden"));
         Movie movie = movieRepo.findById(movieId)
                 .orElseThrow(()->new MovieException("Movie not found to add the tailer, Please check the id"));
         movie.setTrailer(saveFile(tailer));
-        return mapper.mapToMovieResponse(movie);
+        mapper.mapToMovieResponse(movie);
     }
 
     public String saveFile(MultipartFile poster) throws IOException {
@@ -111,7 +93,6 @@ public class MovieService {
         return savedFile.getAbsolutePath();
     }
 
-    @Cacheable(value = "movie", key = "#movieId")
     public MovieResponse getMovie(Long movieId) {
         Movie movie = movieRepo.findById(movieId).orElseThrow(()->new MovieException("Movie not found"));
         return mapper.mapToMovieResponse(movie);
@@ -126,23 +107,16 @@ public class MovieService {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @Caching(evict = {
-            @CacheEvict(value = "moviesByGenre", allEntries = true),
-            @CacheEvict(value = "availableMovies", allEntries = true)
-    }, put = {
-            @CachePut(value = "movie", key = "#movieId")
-    })
-    public MovieResponse activateMovie(int movieId) {
+    public void activateMovie(int movieId) {
         Movie movie = movieRepo.findById((long) movieId).orElseThrow(()->new MovieException(
                 "Movie not found"
         ));
         movie.setIsAvailable(true);
         movieRepo.save(movie);
-        return mapper.mapToMovieResponse(movie);
+        mapper.mapToMovieResponse(movie);
 
     }
 
-    @Cacheable(value = "movies", key = "#page + '-' + #size")
     public PageResponse<MovieResponse> getAllMovies(int page, int size) {
         Pageable pageable = PageRequest.of(page, size,Sort.by("title").ascending());
         Page<Movie> movies = movieRepo.findAll(pageable);
@@ -160,7 +134,6 @@ public class MovieService {
         );
     }
 
-    @Cacheable(value = "moviesByGenre", key = " #filter + '-' +#page + '-' + #size")
     public PageResponse<MovieResponse> getByGenre(String filter,int page, int size) {
         Genre genre = genreRepo.findByName(filter);
         Pageable pageable = PageRequest.of(page, size, Sort.by("title").ascending());
@@ -179,10 +152,6 @@ public class MovieService {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @CacheEvict(
-            value = { "movie", "movies", "moviesByGenre", "availableMovies" },
-            allEntries = true
-    )
     public void deleteMovie(int movieId) {
         Movie movie = movieRepo.findById((long) movieId).orElseThrow(()->new MovieException("Movie not found"));
         movieRepo.delete(movie);
@@ -195,7 +164,6 @@ public class MovieService {
 
     }
 
-    @Cacheable(value = "availableMovies", key = "#page + '-' + #size")
     public PageResponse<MovieResponse> getAvailableMovies(int page, int size) {
         Pageable pageable = PageRequest.of(page,size,Sort.by("title").ascending());
         Page<Movie> movies = movieRepo.findAvailableMovies(pageable);

@@ -1,5 +1,6 @@
 package MovieReservation.movieReservation.config;
 
+import MovieReservation.movieReservation.model.ShowTime;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,25 +20,12 @@ import java.time.Duration;
 public class RedisConfigurations {
     @Bean
     public RedisCacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
-        // ✅ Create and configure ObjectMapper
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule()); // ✅ Support for LocalDateTime
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        objectMapper.activateDefaultTyping(objectMapper.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL);
-
-        // ✅ Create serializer using the configured ObjectMapper
-        Jackson2JsonRedisSerializer<Object> jacksonSerializer =
-                new Jackson2JsonRedisSerializer<>(objectMapper, Object.class);
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(10))
                 .disableCachingNullValues()
-                .serializeValuesWith(
-                        RedisSerializationContext.SerializationPair.fromSerializer(jacksonSerializer)
-                );
+                .serializeValuesWith(RedisSerializationContext.SerializationPair
+                        .fromSerializer(new Jackson2JsonRedisSerializer<>(ShowTime.class)));
 
 
-        return RedisCacheManager.builder(redisConnectionFactory)
-                .cacheDefaults(redisCacheConfiguration).build();
     }
 }
