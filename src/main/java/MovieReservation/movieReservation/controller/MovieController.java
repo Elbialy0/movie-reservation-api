@@ -23,8 +23,8 @@ import java.util.List;
 
 public class MovieController {
     private final MovieService movieService;
-    // todo security configurations
-    @PreAuthorize("hasRole('ADMIN')")
+
+
     @PostMapping("/add")
     public ResponseEntity<String> addNewMovie(@RequestBody @Valid AddMovieRequest request){
         movieService.addMovie(request);
@@ -73,7 +73,7 @@ public class MovieController {
 
         return ResponseEntity.ok().body(movieService.getByGenre(filter,page,size));
     }
-    @PreAuthorize("hasRole('ADMIN')")
+
     @DeleteMapping
     public ResponseEntity<String> deleteMovie(@RequestParam(name = "movie-id")int movieId){
         movieService.deleteMovie(movieId);

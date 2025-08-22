@@ -44,7 +44,7 @@ public class MovieService {
     private final Mapper mapper;
     private static final String UPLOAD_DIR = "D:\\upload_dir";
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+
     public void addMovie( AddMovieRequest request) {
         User user = authService.getAuthentication().orElseThrow(()->new BadCredentialsException("Forbidden"));
         Genre genre = genreRepo.findByName(request.getGenre());
@@ -59,7 +59,7 @@ public class MovieService {
 
         }
 
-        @PreAuthorize("hasRole('ROLE_ADMIN')")
+
     public void addPoster(Long movieId, MultipartFile poster) throws IOException {
         User user = authService.getAuthentication().orElseThrow(()->new BadCredentialsException("Forbidden"));
 
@@ -72,7 +72,7 @@ public class MovieService {
         }
 
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+
     public void addTailer(Long movieId, MultipartFile tailer) throws IOException {
         User user = authService.getAuthentication().orElseThrow(()->new BadCredentialsException("Forbidden"));
         Movie movie = movieRepo.findById(movieId)
@@ -106,7 +106,7 @@ public class MovieService {
 
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+
     public void activateMovie(int movieId) {
         Movie movie = movieRepo.findById((long) movieId).orElseThrow(()->new MovieException(
                 "Movie not found"
@@ -151,7 +151,7 @@ public class MovieService {
         );
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteMovie(int movieId) {
         Movie movie = movieRepo.findById((long) movieId).orElseThrow(()->new MovieException("Movie not found"));
         movieRepo.delete(movie);

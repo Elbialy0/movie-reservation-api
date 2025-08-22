@@ -18,8 +18,11 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
@@ -30,6 +33,7 @@ public class SecurityConfigurations {
     private final CustomOAuth2AuthenticationSuccessHandler successHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final JwtFilter jwtFilter;
+
 
 
     @Bean
@@ -45,6 +49,13 @@ public class SecurityConfigurations {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth->
                         auth.requestMatchers("/auth/logout").authenticated().
+                        requestMatchers( "/movie/add",
+                                "/movie/activate/{movie-id}",
+                                "/movie/poster"
+                                ,"/movie/tailer",
+                                "/reservation/valid",
+                                "/showTime/new",
+                                "/showTime/update/{id}").hasRole("ADMIN").
                         requestMatchers(
                                 "/auth/**",
                                 "/error","/oauth2/authorization/google",

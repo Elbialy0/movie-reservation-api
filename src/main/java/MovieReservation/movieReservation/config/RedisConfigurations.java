@@ -23,7 +23,8 @@ public class RedisConfigurations {
     public RedisCacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
 
         // add java time module to support LocalDateTime
-        // disable the default time module
+        // prevents Jackson from serializing dates as timestamps
+        // (numeric values) and instead uses an ISO-8601 string format.
         //
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());

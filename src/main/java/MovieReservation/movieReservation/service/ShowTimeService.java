@@ -15,6 +15,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -80,7 +81,7 @@ public class ShowTimeService {
     }
 
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteShow(long id) {
         ShowTime showTime = showTimeRepo.findById(id).orElseThrow(
                 ()-> new RuntimeException("Show time not found")
