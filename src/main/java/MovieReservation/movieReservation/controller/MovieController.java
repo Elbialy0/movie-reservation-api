@@ -5,7 +5,6 @@ import MovieReservation.movieReservation.dto.MovieResponse;
 import MovieReservation.movieReservation.dto.PageResponse;
 import MovieReservation.movieReservation.service.MovieService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
@@ -13,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.service.annotation.GetExchange;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -64,7 +62,7 @@ public class MovieController {
     @GetMapping
     public ResponseEntity<PageResponse<MovieResponse>> getAllMovies(@RequestParam(defaultValue = "0") int page
             , @RequestParam(defaultValue = "10") int size){
-        return ResponseEntity.ok().body(movieService.getAllmovies(page, size));
+        return ResponseEntity.ok().body(movieService.getAllMovies(page, size));
         
 
     }
