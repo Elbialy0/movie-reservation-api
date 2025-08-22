@@ -7,21 +7,16 @@ import MovieReservation.movieReservation.mapper.Mapper;
 import MovieReservation.movieReservation.model.ShowTime;
 import MovieReservation.movieReservation.repository.HallRepo;
 import MovieReservation.movieReservation.repository.MovieRepo;
-import MovieReservation.movieReservation.repository.PaymentRepo;
 import MovieReservation.movieReservation.repository.ShowTimeRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
-import org.springframework.data.domain.Limit;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,36 +28,35 @@ public class ShowTimeService {
     private final HallRepo hallRepo;
     private final EmailService emailService;
     private final MovieRepo movieRepo;
-    private final PaymentRepo paymentRepo;
     private final Mapper mapper;
+    private final CacheManager cacheManager;
 
-    @Caching(evict = {
-            @CacheEvict(value = "genre", allEntries = true),
-            @CacheEvict(value = "showTimes", allEntries = true)
-    })
-    public long createNewShowTime(ShowTimeRequest request) {
-      ShowTime showTime = showTimeRepo.save(ShowTime.builder().time(request.getTime()).reservations(new ArrayList<>()).price(request.getPrice()
+
+
+    public ShowTimeResponse createNewShowTime(ShowTimeRequest request) {
+      ShowTime showTime = showTimeRepo.save(ShowTime.builder()
+              .time(request.getTime())
+              .reservations(new ArrayList<>()).price(request.getPrice()
         ).movie(movieRepo.findById((long) request.getMovieId()).orElseThrow(()
-        ->new RuntimeException("Movie not found"))).hall(hallRepo.findById((long)request.getHallId()).orElseThrow(
+        ->new RuntimeException("Movie not found")))
+              .hall(hallRepo.findById((long)request.getHallId()).orElseThrow(
                 ()-> new RuntimeException("Hall not found")
         )).price(request.getPrice()).build());
-      emailService.sendEmailForAll("Add new show","New movie you can watch :| ","show_time.html","http://localhost:8080/api/v1/auth/reservation/reserve",showTime);
+      emailService
+              .sendEmailForAll("Add new show","New movie you can watch :| "
+                      ,"show_time.html","http://localhost:8080/api/v1/auth/reservation/reserve",showTime);
 
 
-      return showTime.getId();
+        Cache cache = cacheManager.getCache("SHOWTIME_CACHE");
+        if(cache!=null) {
+            cache.put(showTime.getId(), mapper.mapToShowTimeResponse(showTime));
+        }
+
+      return mapper.mapToShowTimeResponse(showTime);
 
     }
 
-    @Caching(
-            evict = {
-                    @CacheEvict(value = "genre", allEntries = true),
-                    @CacheEvict(value = "showTimes", allEntries = true)
-            },
-            put = {
-                    @CachePut(value = "showTime", key = "#id")
-            }
-    )
-    public ShowTimeResponse updateShow(ShowTimeRequest request,long id) {
+    public ShowTimeResponse updateShow(ShowTimeRequest request, long id) {
         ShowTime showTime = showTimeRepo.findById(id).orElseThrow(
                 ()-> new RuntimeException("Show time not found")
         );
@@ -76,24 +70,29 @@ public class ShowTimeService {
         showTime.setPrice(request.getPrice());
         showTimeRepo.save(showTime);
         log.info("Show time updated successfully");
-        return mapper.mapToShowTimeResponse(showTime);
+
+        Cache cache = cacheManager.getCache("SHOWTIME_CACHE");
+        if(cache!=null) {
+            cache.put(showTime.getId(), mapper.mapToShowTimeResponse(showTime));
+        }
+       return mapper.mapToShowTimeResponse(showTime);
 
     }
 
-    @Caching(evict = {
-            @CacheEvict(value = "genre", allEntries = true),
-            @CacheEvict(value = "showTimes", allEntries = true),
-            @CacheEvict(value = "showTime", key = "#id")
-    })
+
+
     public void deleteShow(long id) {
         ShowTime showTime = showTimeRepo.findById(id).orElseThrow(
                 ()-> new RuntimeException("Show time not found")
         );
         showTimeRepo.delete(showTime);
+        Cache cache = cacheManager.getCache("SHOWTIME_CACHE");
+        if(cache!=null) {
+            cache.evict(showTime.getId());
+        }
         log.info("Show time deleted successfully");
     }
 
-    @Cacheable(value = "genre", key = "#page + '-' + #size + '-' + #genre")
     public PageResponse<ShowTimeResponse> getByType(String genre, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ShowTime> showTimes = showTimeRepo.findAllByGenre(pageable,genre);
@@ -109,7 +108,6 @@ public class ShowTimeService {
         );
     }
 
-    @Cacheable(value = "showTimes", key = "#page + '-' + #size")
     public PageResponse<ShowTimeResponse> getAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ShowTime> showTimes = showTimeRepo.findAll(pageable);
@@ -141,9 +139,19 @@ public class ShowTimeService {
 
     }
 
-    @Cacheable(value = "showTime", key = "#id")
     public ShowTimeResponse getShowTime(long id) {
+        Cache cache = cacheManager.getCache("SHOWTIME_CACHE");
+        if(cache!=null) {
+         ShowTimeResponse response = cache.get(id,ShowTimeResponse.class);
+         if(response!=null)return response;
+        }
         ShowTime showTime = showTimeRepo.findById(id).orElseThrow(()->new RuntimeException("Show time not found"));
-        return mapper.mapToShowTimeResponse(showTime);
+
+        ShowTimeResponse response =mapper.mapToShowTimeResponse(showTime);
+        if(cache!=null) {
+            cache.put(id, response);
+        }
+        return response;
+
     }
 }

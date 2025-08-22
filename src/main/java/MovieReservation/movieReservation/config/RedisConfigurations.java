@@ -1,6 +1,6 @@
 package MovieReservation.movieReservation.config;
 
-import MovieReservation.movieReservation.model.ShowTime;
+import MovieReservation.movieReservation.dto.ShowTimeResponse;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,16 +15,35 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 
 import java.time.Duration;
+import java.util.Set;
 
 @Configuration
 public class RedisConfigurations {
     @Bean
     public RedisCacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
-        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
+
+        // add java time module to support LocalDateTime
+        // disable the default time module
+        //
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        // Add configuration to serializer
+        Jackson2JsonRedisSerializer<ShowTimeResponse> serializer =
+                new Jackson2JsonRedisSerializer<>(objectMapper,ShowTimeResponse.class);
+        // Set redis configuration
+        RedisCacheConfiguration redisConfigurations = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(10))
                 .disableCachingNullValues()
-                .serializeValuesWith(RedisSerializationContext.SerializationPair
-                        .fromSerializer(new Jackson2JsonRedisSerializer<>(ShowTime.class)));
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer));
+        // build redis manager
+        return RedisCacheManager.builder()
+                .cacheDefaults(redisConfigurations)
+                .initialCacheNames(Set.of("SHOWTIME_CACHE"))
+                .build();
+
+
 
 
     }

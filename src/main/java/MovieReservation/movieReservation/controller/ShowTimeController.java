@@ -3,7 +3,6 @@ package MovieReservation.movieReservation.controller;
 import MovieReservation.movieReservation.dto.PageResponse;
 import MovieReservation.movieReservation.dto.ShowTimeRequest;
 import MovieReservation.movieReservation.dto.ShowTimeResponse;
-import MovieReservation.movieReservation.model.ShowTime;
 import MovieReservation.movieReservation.service.ShowTimeService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,15 +20,16 @@ public class ShowTimeController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/new")
-    public ResponseEntity<Long > addNewShow(@RequestBody ShowTimeRequest request){
-        return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(showTimeService.createNewShowTime(request));
+    public ResponseEntity<ShowTimeResponse> addNewShow(@RequestBody ShowTimeRequest request){
+        return ResponseEntity.status(HttpServletResponse.SC_CREATED)
+                .body(showTimeService.createNewShowTime(request));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{id}")
-    public ResponseEntity<String > updateShow(@PathVariable(name = "id")long id,@RequestBody ShowTimeRequest request){
-        showTimeService.updateShow(request,id);
-        return ResponseEntity.ok().body("Show time updated successfully");
+    public ResponseEntity<ShowTimeResponse> updateShow(@PathVariable(name = "id")long id, @RequestBody ShowTimeRequest request){
+
+        return ResponseEntity.ok().body(showTimeService.updateShow(request,id));
     }
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")

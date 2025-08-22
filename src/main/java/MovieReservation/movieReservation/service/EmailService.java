@@ -30,7 +30,6 @@ public class EmailService {
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
     private final UserRepo userRepo;
-    @Async
 
     public void sendEmailForActivation(String token,  String username,String subject,String templateName,String url){
         Map<String, Object> model = new HashMap<>();
@@ -42,6 +41,7 @@ public class EmailService {
 
     }
 
+    @Async
     public void sendEmail(Map<String ,Object> model,  String username,String subject,String templateName) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
@@ -62,7 +62,7 @@ public class EmailService {
 
     }
 
-    @Async
+
 
     public void sendEmailForForgetPassword(String format, String email, String movieReservationPasswordReset, String s) {
         Map<String, Object> model = new HashMap<>();
@@ -72,7 +72,7 @@ public class EmailService {
 
     }
 
-    @Async
+
 
     public void sendEmailForAll(String addNewShow, String s, String s1, String url, ShowTime showTime) {
         Map<String, Object> model = new HashMap<>();
@@ -89,7 +89,7 @@ public class EmailService {
 
     }
 
-    @Async
+
 
     public void sendReservationEmail(Long id, Reservation reservation) {
         Map<String, Object> model = new HashMap<>();
