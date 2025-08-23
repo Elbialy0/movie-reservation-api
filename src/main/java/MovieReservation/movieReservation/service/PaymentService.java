@@ -5,6 +5,7 @@ import MovieReservation.movieReservation.dto.PaymentRequest;
 import MovieReservation.movieReservation.dto.PaymentResponse;
 import MovieReservation.movieReservation.exceptions.PaymentException;
 import MovieReservation.movieReservation.model.Reservation;
+import MovieReservation.movieReservation.model.SeatStatus;
 import MovieReservation.movieReservation.model.Status;
 import MovieReservation.movieReservation.repository.PaymentRepo;
 import MovieReservation.movieReservation.repository.ReservationRepo;
@@ -114,6 +115,7 @@ public class PaymentService {
             reservationPayment.setStatus(Status.CONFIRMED);
             Reservation reservation = reservationPayment.getReservation();
             reservation.setStatus(Status.CONFIRMED);
+            reservation.getSeat().setStatus(SeatStatus.CONFIRMED);
             paymentRepo.save(reservationPayment);
             reservationRepo.save(reservation);
             return "Payment completed successfully";

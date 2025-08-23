@@ -2,11 +2,11 @@ package MovieReservation.movieReservation.service;
 
 import MovieReservation.movieReservation.dto.PageResponse;
 import MovieReservation.movieReservation.dto.ReservationResponse;
-import MovieReservation.movieReservation.exceptions.HallFullCapacityException;
 import MovieReservation.movieReservation.exceptions.ShowTimeOutException;
 import MovieReservation.movieReservation.mapper.Mapper;
 import MovieReservation.movieReservation.model.*;
 import MovieReservation.movieReservation.repository.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -15,12 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
-
-import java.sql.Time;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,18 +34,16 @@ public class ReservationService {
     private final SeatRepo seatRepo;
 
 
-    public synchronized long  reserve(long id) {
+    @Transactional
+    public long  reserve(long id,long seatId) {
         ShowTime showTime = showTimeRepo.findById(id).orElseThrow(()->
                 new RuntimeException("Show time not found"));
-        int reservations = showTime.getReservations().size();
-        if(reservations==showTime.getHall().getCapacity()){
-            throw new HallFullCapacityException("Hall is full, please try another show");
-        }
+
         if (showTime.getTime().isBefore(LocalDateTime.now())){
             throw new ShowTimeOutException("The show is ended");
         }
-        Seat seat = getAvailableSeat(showTime.getHall());
-        seat.setAvailable(false);
+        Seat seat = seatRepo.findById(seatId).orElseThrow(()->new RuntimeException("Not found"));
+        seat.setStatus(SeatStatus.HELD);
         Reservation reservation = new Reservation();
         reservation.setSeat(seat);
         User user = authService.getAuthentication().orElseThrow(()->new BadCredentialsException("Please login again"));
@@ -66,17 +61,26 @@ public class ReservationService {
         payment.setReservation(reservation);
         paymentRepo.save(payment);
         reservationRepo.save(reservation);
-
-
         return reservationId;
     }
 
-    private Seat getAvailableSeat(Hall hall) {
+    private List<Seat> getAvailableSeat(Hall hall) {
         List<Seat> seats = hall.getSeats();
+        List<Seat> availableSeats = new ArrayList<>();
         for (Seat seat : seats){
-            if (seat.isAvailable()) return seat;
+            if (seat.getStatus()==SeatStatus.AVAILABLE||
+                    (seat.getStatus()==SeatStatus.HELD&&
+                            Duration.between(seat.getLastModified(),LocalDateTime.now()).toMinutes()>=5)) {
+                seat.setStatus(SeatStatus.AVAILABLE);
+                availableSeats.add(seat);
+
+            }
+
         }
-      throw new RuntimeException("No Seats");
+        if(availableSeats.isEmpty()) {
+            throw new RuntimeException("No Seats");
+        }
+        return availableSeats;
     }
 
     public String decline(long id) {
@@ -84,7 +88,7 @@ public class ReservationService {
                 new RuntimeException("Reservation not found"));
         if(reservation.getStatus().equals(Status.PENDING)){
             reservation.setStatus(Status.CANCELED);
-            reservation.getSeat().setAvailable(true);
+            reservation.getSeat().setStatus(SeatStatus.AVAILABLE);
             reservationRepo.save(reservation);
             paymentRepo.delete(reservation.getPayment());
             reservationRepo.delete(reservation);
@@ -92,7 +96,7 @@ public class ReservationService {
         }
         else if(reservation.getStatus().equals(Status.CONFIRMED)){
             reservation.setStatus(Status.CANCELED);
-            reservation.getSeat().setAvailable(true);
+            reservation.getSeat().setStatus(SeatStatus.AVAILABLE);
             reservationRepo.save(reservation);
             Payment payment = reservation.getPayment();
             payment.setStatus(Status.RETURN);
@@ -140,7 +144,7 @@ public class ReservationService {
         for (Reservation reservation : reservations){
             Duration duration = Duration.between(reservation.getCreatedDate(),LocalDateTime.now());
             if(duration.toMinutes() >= 5){
-                reservation.getSeat().setAvailable(true);
+                reservation.getSeat().setStatus(SeatStatus.AVAILABLE);
                 paymentRepo.delete(reservation.getPayment());
                 reservationRepo.delete(reservation);
             }
