@@ -69,10 +69,7 @@ public class SecurityConfigurations {
                 .authenticationProvider(authenticationProvider)
                 .oauth2Login(auth->auth.successHandler(successHandler))
                 .exceptionHandling(eh->eh.authenticationEntryPoint(customAuthenticationEntryPoint))
-
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
-
 
         return http.build();
     }
