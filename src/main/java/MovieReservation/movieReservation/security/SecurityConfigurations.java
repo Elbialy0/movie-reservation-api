@@ -19,10 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
@@ -50,20 +47,23 @@ public class SecurityConfigurations {
                 .authorizeHttpRequests(auth->
                         auth.requestMatchers("/auth/logout").authenticated().
                         requestMatchers( "/movie/add",
-                                "/movie/activate/{movie-id}",
+                                "/movie/activate/*",
                                 "/movie/poster"
                                 ,"/movie/tailer",
                                 "/reservation/valid",
                                 "/showTime/new",
-                                "/showTime/update/{id}").hasRole("ADMIN").
+                                "/showTime/update/*").hasRole("ADMIN").
                         requestMatchers(
                                 "/auth/**",
-                                "/error","/oauth2/authorization/google",
+                                "/error",
+                                "/oauth2/authorization/google",
                                 "/showTime/filter",
-                                "/showTime/findMovie",
+                                "/payment/sucess",
+                                "/movie/filter",
                                 "/showTime/all",
-                                "payment/sucess"
-
+                                "/showTime/findMovie",
+                                "/movie/available",
+                                "/movie/rate/*"
                         ).permitAll().anyRequest().authenticated())
 
                 .authenticationProvider(authenticationProvider)
