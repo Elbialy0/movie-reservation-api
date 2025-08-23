@@ -87,6 +87,7 @@ public class ReservationService {
             reservation.getSeat().setAvailable(true);
             reservationRepo.save(reservation);
             paymentRepo.delete(reservation.getPayment());
+            reservationRepo.delete(reservation);
             return "Reservation cancelled successfully";
         }
         else if(reservation.getStatus().equals(Status.CONFIRMED)){
@@ -139,6 +140,8 @@ public class ReservationService {
         for (Reservation reservation : reservations){
             Duration duration = Duration.between(reservation.getCreatedDate(),LocalDateTime.now());
             if(duration.toMinutes() >= 5){
+                reservation.getSeat().setAvailable(true);
+                paymentRepo.delete(reservation.getPayment());
                 reservationRepo.delete(reservation);
             }
         }
