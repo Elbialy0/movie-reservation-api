@@ -12,10 +12,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
+import java.sql.Time;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -82,6 +87,7 @@ public class ReservationService {
             reservation.getSeat().setAvailable(true);
             reservationRepo.save(reservation);
             paymentRepo.delete(reservation.getPayment());
+            reservationRepo.delete(reservation);
             return "Reservation cancelled successfully";
         }
         else if(reservation.getStatus().equals(Status.CONFIRMED)){
@@ -126,5 +132,19 @@ public class ReservationService {
                 reservations.isFirst(),
                 reservations.isLast()
         );
+    }
+    @Scheduled(fixedRate = 300000)
+    public void deleteInvalidReservations(){
+        List<Reservation> reservations = reservationRepo.findInvalidReservations(Status.CONFIRMED);
+        int numberOfDeletedReservations = 0;
+        for (Reservation reservation : reservations){
+            Duration duration = Duration.between(reservation.getCreatedDate(),LocalDateTime.now());
+            if(duration.toMinutes() >= 5){
+                reservation.getSeat().setAvailable(true);
+                paymentRepo.delete(reservation.getPayment());
+                reservationRepo.delete(reservation);
+            }
+        }
+        log.info("{} reservations was deleted", numberOfDeletedReservations);
     }
 }
