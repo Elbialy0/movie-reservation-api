@@ -25,7 +25,6 @@ public class RedisConfigurations {
         // add java time module to support LocalDateTime
         // prevents Jackson from serializing dates as timestamps
         // (numeric values) and instead uses an ISO-8601 string format.
-        //
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -39,7 +38,7 @@ public class RedisConfigurations {
                 .disableCachingNullValues()
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer));
         // build redis manager
-        return RedisCacheManager.builder()
+        return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(redisConfigurations)
                 .initialCacheNames(Set.of("SHOWTIME_CACHE"))
                 .build();

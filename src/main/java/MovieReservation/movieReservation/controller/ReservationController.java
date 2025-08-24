@@ -15,8 +15,9 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @PostMapping("/reserve/{id}")
-    public ResponseEntity<String > reserve(@PathVariable(name = "id")long id){
-        long reservationId = reservationService.reserve(id);
+    public ResponseEntity<String > reserve(@PathVariable(name = "id")long id,
+                                           @RequestParam(name = "seat-id")long seatId){
+        long reservationId = reservationService.reserve(id,seatId);
         return ResponseEntity.ok().body("Reservation id : "+reservationId);
 
     }
