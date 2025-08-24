@@ -31,7 +31,7 @@ public class ReservationController {
 
         return ResponseEntity.ok().body(reservationService.getReservations(id,page,size));
     }
-    @PreAuthorize("hasRole('ADMIN')")
+
     @GetMapping("/valid")
     public ResponseEntity<PageResponse<ReservationResponse>> getValidReservations(@RequestParam(name = "page",defaultValue = "0")int page,
                                                                                   @RequestParam(name = "size",defaultValue = "10")int size){

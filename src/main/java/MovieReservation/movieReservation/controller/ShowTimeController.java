@@ -18,20 +18,20 @@ import org.springframework.web.bind.annotation.*;
 public class ShowTimeController {
     private final ShowTimeService showTimeService;
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     @PostMapping("/new")
     public ResponseEntity<ShowTimeResponse> addNewShow(@RequestBody ShowTimeRequest request){
         return ResponseEntity.status(HttpServletResponse.SC_CREATED)
                 .body(showTimeService.createNewShowTime(request));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     @PutMapping("/update/{id}")
     public ResponseEntity<ShowTimeResponse> updateShow(@PathVariable(name = "id")long id, @RequestBody ShowTimeRequest request){
 
         return ResponseEntity.ok().body(showTimeService.updateShow(request,id));
     }
-    @PreAuthorize("hasRole('ADMIN')")
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String > deleteShow(@PathVariable(name = "id")long id){
         showTimeService.deleteShow(id);
