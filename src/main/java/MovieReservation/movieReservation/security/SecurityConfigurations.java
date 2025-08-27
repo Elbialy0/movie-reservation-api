@@ -38,7 +38,7 @@ public class SecurityConfigurations {
         CsrfTokenRequestAttributeHandler csrfHandler = new CsrfTokenRequestAttributeHandler();
 
         http.csrf(csrfConfig->csrfConfig.csrfTokenRequestHandler(csrfHandler)
-                        .ignoringRequestMatchers("/auth/register")
+                        .ignoringRequestMatchers("/auth/signup")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .cors(AbstractHttpConfigurer::disable)
