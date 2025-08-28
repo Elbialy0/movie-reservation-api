@@ -52,7 +52,10 @@ public class SecurityConfigurations {
                                 ,"/movie/tailer",
                                 "/reservation/valid",
                                 "/showTime/new",
-                                "/showTime/update/*").hasRole("ADMIN").
+                                "/showTime/update/*",
+                                "/seats/add",
+                                "/seats/delete"
+                        ).hasRole("ADMIN").
                         requestMatchers(
                                 "/auth/**",
                                 "/error",
@@ -63,7 +66,8 @@ public class SecurityConfigurations {
                                 "/showTime/all",
                                 "/showTime/findMovie",
                                 "/movie/available",
-                                "/movie/rate/*"
+                                "/movie/rate/*",
+                                "/seats"
                         ).permitAll().anyRequest().authenticated())
 
                 .authenticationProvider(authenticationProvider)

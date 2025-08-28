@@ -66,24 +66,6 @@ public class ReservationService {
         return reservationId;
     }
 
-    private List<Seat> getAvailableSeat(Hall hall) {
-        List<Seat> seats = hall.getSeats();
-        List<Seat> availableSeats = new ArrayList<>();
-        for (Seat seat : seats){
-            if (seat.getStatus()==SeatStatus.AVAILABLE||
-                    (seat.getStatus()==SeatStatus.HELD&&
-                            Duration.between(seat.getLastModified(),LocalDateTime.now()).toMinutes()>=5)) {
-                seat.setStatus(SeatStatus.AVAILABLE);
-                availableSeats.add(seat);
-
-            }
-
-        }
-        if(availableSeats.isEmpty()) {
-            throw new RuntimeException("No Seats");
-        }
-        return availableSeats;
-    }
 
     public String decline(long id) {
         Reservation reservation =  reservationRepo.findById(id).orElseThrow(()->
