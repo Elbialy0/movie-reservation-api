@@ -6,6 +6,7 @@ import MovieReservation.movieReservation.model.Seat;
 import MovieReservation.movieReservation.model.SeatStatus;
 import MovieReservation.movieReservation.repository.HallRepo;
 import MovieReservation.movieReservation.repository.SeatRepo;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +29,7 @@ public class SeatServiceImp implements SeatService{
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
         Seat seat = seatRepo.findById(id).orElseThrow(()->new RuntimeException("Seat not found"));
         seatRepo.delete(seat);
