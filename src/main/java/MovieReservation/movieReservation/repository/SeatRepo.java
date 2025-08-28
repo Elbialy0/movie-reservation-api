@@ -6,6 +6,7 @@ import MovieReservation.movieReservation.model.SeatStatus;
 import io.lettuce.core.dynamic.annotation.Param;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
+import jakarta.transaction.Transactional;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
