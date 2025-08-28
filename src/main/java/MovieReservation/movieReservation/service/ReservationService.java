@@ -125,20 +125,6 @@ public class ReservationService {
         );
     }
 
-    public PageResponse<ReservationResponse> getValidReservations(int page, int size) {
-        Pageable pageable = PageRequest.of(page,size);
-        Page<Reservation> reservations = reservationRepo.findReservationsBasedOnStatus(pageable,Status.CONFIRMED);
-        List<ReservationResponse> content = reservations.getContent().stream().map(mapper::mapToReservationResponse).toList();
-        return new PageResponse<>(
-                content,
-                reservations.getNumber(),
-                reservations.getNumberOfElements(),
-                reservations.getSize(),
-                reservations.getTotalPages(),
-                reservations.isFirst(),
-                reservations.isLast()
-        );
-    }
     @Scheduled(fixedRate = 300000)
     public void deleteInvalidReservations(){
         List<Reservation> reservations = reservationRepo.findInvalidReservations(Status.CONFIRMED);

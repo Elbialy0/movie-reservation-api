@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HallRepo extends JpaRepository<Hall, Long> {
+    Hall findByName(String hallName);
 }
