@@ -1,5 +1,9 @@
 package MovieReservation.movieReservation.service;
 
+import MovieReservation.movieReservation.dto.LoginRequest;
+import MovieReservation.movieReservation.dto.LoginResponse;
+import MovieReservation.movieReservation.dto.ResetPasswordRequest;
+import MovieReservation.movieReservation.dto.SignupRequest;
 import MovieReservation.movieReservation.dto.*;
 import MovieReservation.movieReservation.exceptions.SignupException;
 import MovieReservation.movieReservation.exceptions.UsernameNotFoundException;

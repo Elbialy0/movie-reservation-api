@@ -2,7 +2,6 @@ package MovieReservation.movieReservation.filters;
 
 import MovieReservation.movieReservation.exceptions.InvalidJwtToken;
 import MovieReservation.movieReservation.security.JwtService;
-import MovieReservation.movieReservation.service.AuthService;
 import MovieReservation.movieReservation.service.JwtBlackListService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;

@@ -2,7 +2,6 @@ package MovieReservation.movieReservation.handler;
 
 import MovieReservation.movieReservation.dto.ExceptionResponse;
 import MovieReservation.movieReservation.exceptions.MailSendingExceptions;
-import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

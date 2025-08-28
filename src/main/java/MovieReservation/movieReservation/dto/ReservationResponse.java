@@ -1,6 +1,5 @@
 package MovieReservation.movieReservation.dto;
 
-import MovieReservation.movieReservation.model.Seat;
 import lombok.*;
 
 import java.time.LocalDateTime;

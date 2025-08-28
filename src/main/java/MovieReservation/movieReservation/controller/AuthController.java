@@ -1,16 +1,14 @@
 package MovieReservation.movieReservation.controller;
 
 import MovieReservation.movieReservation.dto.*;
+import MovieReservation.movieReservation.dto.*;
 import MovieReservation.movieReservation.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.lang.annotation.Target;
 
 @RestController
 @RequestMapping("/auth")

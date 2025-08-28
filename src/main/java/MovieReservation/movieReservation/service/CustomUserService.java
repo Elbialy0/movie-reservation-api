@@ -1,6 +1,5 @@
 package MovieReservation.movieReservation.service;
 
-import MovieReservation.movieReservation.model.User;
 import MovieReservation.movieReservation.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
