@@ -25,8 +25,9 @@ public class MovieController {
 
 
     @PostMapping("/add")
-    public ResponseEntity<String> addNewMovie(@RequestBody @Valid AddMovieRequest request){
-        movieService.addMovie(request);
+    public ResponseEntity<String> addNewMovie(@RequestBody @Valid AddMovieRequest request,
+                                              @RequestHeader("Idempotency-Key")String idempotencyKey){
+        movieService.addMovie(request,idempotencyKey);
         return ResponseEntity.ok("Movie added successfully");
 
     }

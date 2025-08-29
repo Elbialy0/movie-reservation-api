@@ -11,6 +11,7 @@ import MovieReservation.movieReservation.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +38,8 @@ public class ReservationService {
 
 
     @Transactional
-    public long  reserve(long id,long seatId) {
+    @Cacheable(value = "idempotentCache", key = "#idempotencyKey")
+    public long  reserve(long id,long seatId,String idempotencyKey) {
         ShowTime showTime = showTimeRepo.findById(id).orElseThrow(()->
                 new RuntimeException("Show time not found"));
 

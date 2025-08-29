@@ -5,6 +5,7 @@ import MovieReservation.movieReservation.dto.*;
 import MovieReservation.movieReservation.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,9 +18,10 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody @Validated SignupRequest request){
-        authService.signup(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body("User signup successfully");
+    public ResponseEntity<String> signup(@RequestBody @Validated SignupRequest request,
+                                         @RequestHeader("Idempotency-Key")String idempotencyKey){
+
+        return ResponseEntity.status(HttpStatus.CREATED).body( authService.signup(request,idempotencyKey));
     }
     @GetMapping("/activation/{token}")
     public ResponseEntity<String> activation(@PathVariable String token){
@@ -32,8 +34,9 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body("Password reset link sent to your email");
     }
     @PostMapping("/resetPassword")
-    public ResponseEntity<String> resetPassword(@RequestBody @Valid ResetPasswordRequest request){
-        authService.resetPassword(request);
+    public ResponseEntity<String> resetPassword(@RequestBody @Valid ResetPasswordRequest request,
+                                                @RequestHeader("Idempotency-Key")String idempotencyKey){
+        authService.resetPassword(request,idempotencyKey);
         return ResponseEntity.status(HttpStatus.OK).body("Password reset successfully");
     }
     @PostMapping("/login")

@@ -15,8 +15,9 @@ public class ReservationController {
 
     @PostMapping("/reserve/{id}")
     public ResponseEntity<String > reserve(@PathVariable(name = "id")long id,
-                                           @RequestParam(name = "seat-id")long seatId){
-        long reservationId = reservationService.reserve(id,seatId);
+                                           @RequestParam(name = "seat-id")long seatId,
+                                           @RequestHeader("Idempotency-Key")String idempotencyKey){
+        long reservationId = reservationService.reserve(id,seatId,idempotencyKey);
         return ResponseEntity.ok().body("Reservation id : "+reservationId);
 
     }

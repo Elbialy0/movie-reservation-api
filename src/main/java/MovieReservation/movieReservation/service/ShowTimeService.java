@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +35,8 @@ public class ShowTimeService {
 
 
 
-    public ShowTimeResponse createNewShowTime(ShowTimeRequest request) {
+    @Cacheable(value = "idempotentCache", key = "#idempotencyKey")
+    public ShowTimeResponse createNewShowTime(ShowTimeRequest request,String idempotencyKey) {
       ShowTime showTime = showTimeRepo.save(ShowTime.builder()
               .time(request.getTime())
               .reservations(new ArrayList<>()).price(request.getPrice()

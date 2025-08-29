@@ -15,8 +15,9 @@ public class SeatController {
 
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addNewSeat(@RequestParam("hall-name") String hallName){
-        seatService.addSeat(hallName);
+    public void addNewSeat(@RequestParam("hall-name") String hallName,
+                           @RequestHeader("Idempotency-Key")String idempotencyKey){
+        seatService.addSeat(hallName,idempotencyKey);
     }
 
     @DeleteMapping("/delete/{seat-id}")
