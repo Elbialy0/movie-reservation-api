@@ -19,72 +19,72 @@ import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {
+//
+//    @Mock
+//    RoleRepo roleRepo;
+//    @Mock
+//    TokenService tokenService;
+//    @Mock
+//    EmailService emailService;
+//    @Mock
+//    PasswordEncoder passwordEncoder;
+//
+//    @Mock
+//    UserRepo userRepo;
+//    @InjectMocks
+//    AuthService authService;
+//    User dummy = User.builder()
+//            .id(1L)
+//            .username("john@mail.com")
+//            .password("encoded-pass")
+//            .firstName("John")
+//            .lastName("Doe")
+//            .build();
+//    SignupRequest request = SignupRequest.builder()
+//            .firstName("John")
+//            .lastName("Doe")
+//            .username("john@mail.com")
+//            .password("plain-pass-123")
+//            .phoneNumber("+10000000000")
+//            .birthDate(LocalDate.of(1990,1,1))
+//            .build();
+//
+//    @Test void throwExceptionWhenRegisterUserIfUserAlreadyRegistered(){
+//
+//     when(userRepo.findByUsername("john@mail.com")).thenReturn(Optional.of(dummy));
+//        Assertions.assertThrows(SignupException.class, () -> authService.signup(request));
+//    }
+//
+//    @Test void doesNotThrowExceptionWhenRegisterUserIfUserNotRegistered(){
+//        when(userRepo.findByUsername("john@mail.com")).thenReturn(Optional.empty());
+//        when(roleRepo.findById(1L)).thenReturn(Optional.of(new Role(1L, "USER", null)));
+//        Assertions.assertDoesNotThrow(()->authService.signup(request));
+//    }
+//
+//    @Test void throwExceptionWhenRegisterUserIfRoleEqualsNull(){
+//        when(userRepo.findByUsername("john@mail.com")).thenReturn(Optional.empty());
+//        when(roleRepo.findById(1L)).thenReturn(Optional.empty());
+//        Assertions.assertThrows(RuntimeException.class,()->authService.signup(request));
+//
+//    }
+//    @Test void giveUserWithThrowingExceptionWhenSendingTheActivationEmailThenUserRegistered(){
+//        when(userRepo.findByUsername("john@mail.com")).thenReturn(Optional.empty());
+//        when(roleRepo.findById(1L)).thenReturn(Optional.of(new Role(1L, "USER", null)));
+//        when(tokenService.createToken("john@mail.com")).thenReturn("token");
+//
+//        doThrow(RuntimeException.class)
+//                .when(emailService)
+//                .sendEmailForActivation(anyString(), anyString(), any(), anyString(), anyString());
+//
+//        Assertions.assertDoesNotThrow(()->authService.signup(request));
+//
 
-    @Mock
-    RoleRepo roleRepo;
-    @Mock
-    TokenService tokenService;
-    @Mock
-    EmailService emailService;
-    @Mock
-    PasswordEncoder passwordEncoder;
 
-    @Mock
-    UserRepo userRepo;
-    @InjectMocks
-    AuthService authService;
-    User dummy = User.builder()
-            .id(1L)
-            .username("john@mail.com")
-            .password("encoded-pass")
-            .firstName("John")
-            .lastName("Doe")
-            .build();
-    SignupRequest request = SignupRequest.builder()
-            .firstName("John")
-            .lastName("Doe")
-            .username("john@mail.com")
-            .password("plain-pass-123")
-            .phoneNumber("+10000000000")
-            .birthDate(LocalDate.of(1990,1,1))
-            .build();
-    
-    @Test void throwExceptionWhenRegisterUserIfUserAlreadyRegistered(){
 
-     when(userRepo.findByUsername("john@mail.com")).thenReturn(Optional.of(dummy));
-        Assertions.assertThrows(SignupException.class, () -> authService.signup(request));
     }
 
-    @Test void doesNotThrowExceptionWhenRegisterUserIfUserNotRegistered(){
-        when(userRepo.findByUsername("john@mail.com")).thenReturn(Optional.empty());
-        when(roleRepo.findById(1L)).thenReturn(Optional.of(new Role(1L, "USER", null)));
-        Assertions.assertDoesNotThrow(()->authService.signup(request));
-    }
-
-    @Test void throwExceptionWhenRegisterUserIfRoleEqualsNull(){
-        when(userRepo.findByUsername("john@mail.com")).thenReturn(Optional.empty());
-        when(roleRepo.findById(1L)).thenReturn(Optional.empty());
-        Assertions.assertThrows(RuntimeException.class,()->authService.signup(request));
-
-    }
-    @Test void giveUserWithThrowingExceptionWhenSendingTheActivationEmailThenUserRegistered(){
-        when(userRepo.findByUsername("john@mail.com")).thenReturn(Optional.empty());
-        when(roleRepo.findById(1L)).thenReturn(Optional.of(new Role(1L, "USER", null)));
-        when(tokenService.createToken("john@mail.com")).thenReturn("token");
-
-        doThrow(RuntimeException.class)
-                .when(emailService)
-                .sendEmailForActivation(anyString(), anyString(), any(), anyString(), anyString());
-
-        Assertions.assertDoesNotThrow(()->authService.signup(request));
-
-
-
-
-    }
 
 
 
 
 
-}

@@ -15,8 +15,9 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
     private final PaymentService paymentService;
     @PostMapping("/pay")
-    public ResponseEntity<PaymentResponse> pay(@Valid @RequestBody PaymentRequest paymentRequest) throws PayPalRESTException {
-      return   ResponseEntity.ok().body(paymentService.pay(paymentRequest));
+    public ResponseEntity<PaymentResponse> pay(@Valid @RequestBody PaymentRequest paymentRequest
+    , @RequestHeader("Idempotency-Key")String idempotencyKey) throws PayPalRESTException {
+      return   ResponseEntity.ok().body(paymentService.pay(paymentRequest,idempotencyKey));
     }
     @GetMapping("/sucess")
     public ResponseEntity<String> successfulPayment(@RequestParam("paymentId") String paymentId,

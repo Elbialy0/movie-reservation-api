@@ -17,6 +17,7 @@ import MovieReservation.movieReservation.security.JwtService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -41,8 +42,8 @@ public class AuthService {
     private final TokenRepo tokenRepo;
     private final JwtBlackListService jwtBlackListService;
 
-
-    public void signup(SignupRequest request) {
+    @Cacheable(value = "idempotentCache", key = "#idempotencyKey")
+    public String  signup(SignupRequest request,String idempotencyKey) {
         if(userRepo.findByUsername(request.getUsername()).isPresent()){
             throw new SignupException("Username is already taken");
         }
@@ -67,6 +68,7 @@ public class AuthService {
             log.error("Can't send mail i will try again");
         }
         log.info("http://localhost:8080/api/v1/auth/activation/{}", token);
+        return "User signup successfully";
 
     }
 
@@ -94,7 +96,8 @@ public class AuthService {
 
     }
 
-    public void resetPassword( ResetPasswordRequest request) {
+    @Cacheable(value = "idempotentCache", key = "#idempotencyKey",unless = "#result == null")
+    public void resetPassword( ResetPasswordRequest request,String idempotencyKey) {
         Token dbToken = tokenService.verify(request.getToken());
         User user = dbToken.getUser();
         user.setPassword(passwordEncoder.encode(request.getPassword()));

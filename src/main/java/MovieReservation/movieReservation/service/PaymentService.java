@@ -16,6 +16,7 @@ import com.paypal.base.rest.PayPalRESTException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -78,7 +79,9 @@ public class PaymentService {
         return payment.execute(apiContext, paymentExecution);
     }
 
-    public PaymentResponse pay(@Valid PaymentRequest paymentRequest) throws PayPalRESTException {
+    @Cacheable(value = "idempotentCache", key = "#idempotencyKey")
+    public PaymentResponse pay(@Valid PaymentRequest paymentRequest,
+                               String idempotencyKey) throws PayPalRESTException {
 
         Payment payment = createPayment(
                 105.0,
