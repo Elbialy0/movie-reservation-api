@@ -8,6 +8,7 @@ import MovieReservation.movieReservation.repository.HallRepo;
 import MovieReservation.movieReservation.repository.SeatRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +21,8 @@ public class SeatServiceImp implements SeatService{
     private final HallRepo hallRepo;
 
     @Override
-    public void addSeat(String hallName) {
+    @Cacheable(value = "idempotentCache", key = "#idempotencyKey")
+    public void addSeat(String hallName,String idempotencyKey) {
         Hall hall = hallRepo.findByName(hallName);
         Seat seat = new Seat();
         seat.setStatus(SeatStatus.AVAILABLE);

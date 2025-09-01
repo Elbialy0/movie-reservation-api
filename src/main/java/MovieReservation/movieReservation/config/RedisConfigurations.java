@@ -30,8 +30,8 @@ public class RedisConfigurations {
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         // Add configuration to serializer
-        Jackson2JsonRedisSerializer<ShowTimeResponse> serializer =
-                new Jackson2JsonRedisSerializer<>(objectMapper,ShowTimeResponse.class);
+        Jackson2JsonRedisSerializer<Object> serializer =
+                new Jackson2JsonRedisSerializer<>(objectMapper,Object.class);
         // Set redis configuration
         RedisCacheConfiguration redisConfigurations = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(10))

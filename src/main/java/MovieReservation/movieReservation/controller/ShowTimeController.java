@@ -19,9 +19,10 @@ public class ShowTimeController {
 
 
     @PostMapping("/new")
-    public ResponseEntity<ShowTimeResponse> addNewShow(@RequestBody ShowTimeRequest request){
+    public ResponseEntity<ShowTimeResponse> addNewShow(@RequestBody ShowTimeRequest request,
+                                                       @RequestHeader("Idempotency-Key")String idempotencyKey){
         return ResponseEntity.status(HttpServletResponse.SC_CREATED)
-                .body(showTimeService.createNewShowTime(request));
+                .body(showTimeService.createNewShowTime(request,idempotencyKey));
     }
 
 

@@ -3,7 +3,7 @@ package MovieReservation.movieReservation.service;
 import MovieReservation.movieReservation.dto.PageResponse;
 
 public interface SeatService {
-    public void addSeat(String hallName);
+    public void addSeat(String hallName,String idempotencyKey);
 
     public  void delete(Long id);
 
